@@ -3,7 +3,7 @@ package br.com.viajaai.viajaai.services;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.viajaai.viajaai.dto.CreateUserDto;
@@ -14,9 +14,12 @@ import br.com.viajaai.viajaai.repositories.UserRepository;
 
 @Service
 public class UserService {
-    
-    @Autowired
-    private UserRepository userRepository;
+    // Aparentemente o @Autowired não é mais necessário com a injeção via construtor
+    private final UserRepository userRepository;
+
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     public UserEntity criarUsuario(CreateUserDto dto) {
         UserEntity user = UserEntity.builder()
