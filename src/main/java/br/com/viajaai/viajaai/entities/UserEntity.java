@@ -2,6 +2,8 @@ package br.com.viajaai.viajaai.entities;
 
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -29,5 +31,6 @@ public class UserEntity {
     private String senha;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference // evitando erro de serialização infinita
     private UsersPreferencesEntity preferences;
 }

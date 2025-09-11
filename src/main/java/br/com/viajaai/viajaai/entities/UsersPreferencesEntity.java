@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -43,5 +45,6 @@ public class UsersPreferencesEntity {
 
     @OneToOne
     @JoinColumn(name = "user_id")
+    @JsonBackReference // evitando erro de serialização infinita
     private UserEntity user;
 }   

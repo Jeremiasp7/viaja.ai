@@ -7,20 +7,20 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import br.com.viajaai.viajaai.dto.CreateUserDto;
-import br.com.viajaai.viajaai.dto.PreferencesUserDto;
+import br.com.viajaai.viajaai.dto.CreateUserPreferencesDto;
 import br.com.viajaai.viajaai.entities.UserEntity;
 import br.com.viajaai.viajaai.entities.UsersPreferencesEntity;
 import br.com.viajaai.viajaai.repositories.UserRepository;
+import br.com.viajaai.viajaai.repositories.UsersPreferencesRepository;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
-    // Aparentemente o @Autowired não é mais necessário com a injeção via construtor
+    // o @RequiredArgsConstructor cria o construtor automaticamente
     private final UserRepository userRepository;
-
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
+    private final UsersPreferencesRepository usersPreferencesRepository;
+    
     public UserEntity criarUsuario(CreateUserDto dto) {
         UserEntity user = UserEntity.builder()
             .email(dto.getEmail())
@@ -35,7 +35,7 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public UsersPreferencesEntity atualizarPreferencias(UUID userId, PreferencesUserDto dto) {
+    public UsersPreferencesEntity atualizarPreferencias(UUID userId, CreateUserPreferencesDto dto) {
         UserEntity user = userRepository.findById(userId)
             .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
@@ -59,5 +59,10 @@ public class UserService {
         userRepository.save(user);
 
         return preferences;
+    }
+
+    public UsersPreferencesEntity buscarPreferenciasDoUsuario(UUID userId) {
+        return usersPreferencesRepository.findByUserId(userId)
+            .orElseThrow(() -> new RuntimeException("Este usuário não possui preferências"));
     }
 }

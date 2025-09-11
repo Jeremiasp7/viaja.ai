@@ -2,7 +2,6 @@ package br.com.viajaai.viajaai.dto;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.UUID;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PreferencesUserDto {
+public class CreateUserPreferencesDto {
 
     private String estiloDeViagem;
     private String preferenciaDeAcomodacao;  
@@ -22,5 +21,4 @@ public class PreferencesUserDto {
     private Integer duracaoDaViagem;
     private String companhiaDeViagem;
     private List<LocalDate> preferenciaDeDatas;
-    private UUID userId;
 }
