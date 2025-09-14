@@ -34,7 +34,7 @@ public class UserController {
         return service.buscarPreferenciasDoUsuario(userId);
     }
 
-    @PostMapping("preferencias/{userId}")
+    @PostMapping("/preferencias/{userId}")
     public UsersPreferencesEntity create(@PathVariable UUID userId, @RequestBody CreateUserPreferencesDto preferencias) {
         return service.atualizarPreferencias(userId, preferencias);
     }
