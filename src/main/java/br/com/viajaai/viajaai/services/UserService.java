@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.viajaai.viajaai.dto.CreateUserDto;
 import br.com.viajaai.viajaai.entities.UserEntity;
+import br.com.viajaai.viajaai.exceptions.UsuarioNaoEncontradoException;
 import br.com.viajaai.viajaai.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -37,12 +38,12 @@ public class UserService {
     }
 
     // Ajustar a exceção
-    public UserEntity buscarUsuarioPorId(UUID id) {
+    public UserEntity buscarUsuarioPorId(UUID id) throws UsuarioNaoEncontradoException {
     return userRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+        .orElseThrow(() -> new UsuarioNaoEncontradoException("Usuário não encontrado"));
     }
 
-    public UserEntity atualizarUsuario(UUID id, CreateUserDto dto) {
+    public UserEntity atualizarUsuario(UUID id, CreateUserDto dto) throws UsuarioNaoEncontradoException {
         UserEntity user = buscarUsuarioPorId(id);
         user.setNome(dto.getNome());
         user.setEmail(dto.getEmail());
@@ -50,7 +51,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public void deletarUsuario(UUID id) {
+    public void deletarUsuario(UUID id) throws UsuarioNaoEncontradoException {
         UserEntity user = buscarUsuarioPorId(id);
         userRepository.delete(user);
     }

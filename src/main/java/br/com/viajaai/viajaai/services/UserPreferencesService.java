@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import br.com.viajaai.viajaai.dto.CreateUserPreferencesDto;
 import br.com.viajaai.viajaai.entities.UserEntity;
 import br.com.viajaai.viajaai.entities.UsersPreferencesEntity;
+import br.com.viajaai.viajaai.exceptions.UsuarioNaoEncontradoException;
 import br.com.viajaai.viajaai.repositories.UserRepository;
 import br.com.viajaai.viajaai.repositories.UsersPreferencesRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +19,9 @@ public class UserPreferencesService {
     private final UsersPreferencesRepository usersPreferencesRepository;
 
     // Ajustar a exceção
-    public UsersPreferencesEntity atualizarPreferencias(UUID userId, CreateUserPreferencesDto dto) {
+    public UsersPreferencesEntity atualizarPreferencias(UUID userId, CreateUserPreferencesDto dto) throws UsuarioNaoEncontradoException {
         UserEntity user = userRepository.findById(userId)
-            .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+            .orElseThrow(() -> new UsuarioNaoEncontradoException("Usuário não encontrado"));
 
         UsersPreferencesEntity preferences = user.getPreferences();
 
@@ -45,9 +46,9 @@ public class UserPreferencesService {
     }
 
     // Ajustar a exceção
-    public UsersPreferencesEntity buscarPreferenciasDoUsuario(UUID userId) {
+    public UsersPreferencesEntity buscarPreferenciasDoUsuario(UUID userId) throws UsuarioNaoEncontradoException {
         return usersPreferencesRepository.findByUserId(userId)
-            .orElseThrow(() -> new RuntimeException("Este usuário não possui preferências"));
+            .orElseThrow(() -> new UsuarioNaoEncontradoException("Este usuário não possui preferências"));
     }
     
 }
