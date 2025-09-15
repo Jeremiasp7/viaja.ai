@@ -5,22 +5,21 @@ import java.util.List;
 import java.util.UUID;
 
 import br.com.viajaai.viajaai.dto.CreateUserDto;
-import br.com.viajaai.viajaai.dto.CreateUserPreferencesDto;
 import br.com.viajaai.viajaai.entities.UserEntity;
-import br.com.viajaai.viajaai.entities.UsersPreferencesEntity;
 import br.com.viajaai.viajaai.exceptions.UsuarioNaoEncontradoException;
 import br.com.viajaai.viajaai.services.UserService;
 import br.com.viajaai.viajaai.services.UserPreferencesService;
+
+//import br.com.viajaai.viajaai.entities.UsersPreferencesEntity;
+//import br.com.viajaai.viajaai.dto.CreateUserPreferencesDto;
 
 @RestController
 @RequestMapping("/usuarios")
 public class UserController {
     private final UserService service;
-    private final UserPreferencesService preferencesService;
 
     public UserController(UserService service, UserPreferencesService preferencesService) {
         this.service = service;
-        this.preferencesService = preferencesService;
     }
 
     @GetMapping("/{id}")
@@ -46,15 +45,5 @@ public class UserController {
     @PostMapping
     public UserEntity create(@RequestBody CreateUserDto user) {
         return service.criarUsuario(user);
-    }
-
-    @GetMapping("/preferencias/{userId}")
-    public UsersPreferencesEntity buscarPreferenciasDoUsuario(@PathVariable UUID userId) throws UsuarioNaoEncontradoException {
-        return preferencesService.buscarPreferenciasDoUsuario(userId);
-    }
-
-    @PostMapping("preferencias/{userId}")
-    public UsersPreferencesEntity create(@PathVariable UUID userId, @RequestBody CreateUserPreferencesDto preferencias) throws UsuarioNaoEncontradoException {
-        return preferencesService.atualizarPreferencias(userId, preferencias);
     }
 }
