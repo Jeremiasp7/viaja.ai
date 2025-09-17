@@ -46,3 +46,4 @@ public class UserController {
     public UserEntity create(@RequestBody CreateUserDto user) {
         return service.criarUsuario(user);
     }
+}
