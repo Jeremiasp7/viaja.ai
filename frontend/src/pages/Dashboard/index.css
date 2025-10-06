@@ -1,0 +1,126 @@
+
+.home-header {
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://media.gettyimages.com/id/182043055/pt/foto/c%C3%A9u-dram%C3%A1tico-sobre-estrada-vazia-na-argentina-patag%C3%B4nia.jpg?s=612x612&w=0&k=20&c=5cz2VtETu9iUrtPGqI3EzxmPTyathIBAoXFspHjxFLQ=' ) no-repeat center center/cover;
+  color: var(--white);
+  padding: 4rem 2rem;
+  text-align: center;
+  border-radius: 0 0 20px 20px;
+}
+
+.container {
+    padding: 1rem 2rem;
+    max-width: 1200px;
+    margin: auto auto 50px auto;
+}
+
+.search-bar {
+  position: relative;
+  max-width: 600px;
+  margin: 1.5rem auto 0;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 1rem 1rem 1rem 3rem;
+  border-radius: 50px;
+  border: none;
+  font-size: 1rem;
+}
+
+.search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #aaa;
+}
+
+.trips-section, .suggestions-section {
+  margin-top: 2rem;
+}
+
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+
+.trip-card img, .suggestion-card img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+}
+
+.trip-info {
+  padding: 1rem;
+}
+
+.trip-info h4 { margin: 0; color: var(--text-color); }
+.trip-info p { margin: 0.25rem 0; font-size: 0.9rem; color: #666; }
+
+.progress-bar {
+  background-color: var(--light-gray);
+  border-radius: 10px;
+  height: 8px;
+  margin-top: 0.5rem;
+}
+
+.progress {
+  background-color: var(--secondary-color);
+  height: 100%;
+  border-radius: 10px;
+}
+
+.new-trip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 1rem;
+  border: 2px dashed var(--light-gray);
+}
+
+.new-trip h4 { color: #888; }
+
+.btn-create {
+  background-color: var(--primary-color);
+  color: var(--white);
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 50px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-top: 1rem;
+}
+
+.suggestion-card p {
+  padding: 1rem;
+  margin: 0;
+  font-weight: 600;
+}
+
+.app-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: var(--white);
+  display: flex;
+  justify-content: space-around;
+  padding: 0.5rem 0;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+}
+
+.footer-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 1.2rem;
+  color: #aaa;
+  cursor: pointer;
+}
+.footer-icon p { font-size: 0.7rem; margin: 0.2rem 0 0 0; }
+.footer-icon.active { color: var(--primary-color); }
