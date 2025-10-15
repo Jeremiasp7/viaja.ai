@@ -38,7 +38,7 @@ public class SugestaoRoteirosService {
                 );
 
         String prompt = """
-                Haja como se você fosse uma agência brasileira de viagens de excelência e sugira um roteiro de viagens para um cliente com base nas preferências abaixo: 
+                Responda em português e não dê margem para continuar uma conversa. Haja como se você fosse uma agência brasileira de viagens de excelência e sugira um roteiro de viagens para um cliente com base nas preferências abaixo: 
                 
                 %s.
                 
