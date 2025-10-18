@@ -15,6 +15,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -42,4 +43,7 @@ public class TravelPlanEntity {
     @OneToMany(mappedBy = "travelPlan", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JsonManagedReference
     private List<DestinationEntity> destinations;
+
+    @OneToOne(mappedBy = "travelPlan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private BudgetEntity budget;
 }
