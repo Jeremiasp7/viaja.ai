@@ -24,6 +24,10 @@ public class BudgetService {
     private final UserRepository userRepository;
     
     public BudgetEntity createBudget(CreateBudgetDto dto) {
+        if (budgetRepository.findByTravelPlanId(dto.getTravelPlanId()) != null) {
+            throw new IllegalArgumentException("Já existe um orçamento para este plano de viagem.");
+        }
+
         TravelPlanEntity travelPlan = travelPlanRepository.findById(dto.getTravelPlanId())
                 .orElseThrow(() -> new IllegalArgumentException("Plano de viagem não encontrado com o ID: " + dto.getTravelPlanId()));
 

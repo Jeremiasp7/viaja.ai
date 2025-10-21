@@ -38,7 +38,7 @@ public class TravelPlanService {
             return DestinationEntity.builder()
                     .country(destDto.getCountry())
                     .city(destDto.getCity())
-                    .arrivalDate(destDto.getArrivalDate())
+                    .arrivalDate(destDto.getArrivalDate()) // O usuário vai ter que fornecer a data de chegada duas vezes?
                     .departureDate(destDto.getDepartureDate())
                     .travelPlan(travelPlan) // Associa o destino ao plano
                     .build();
