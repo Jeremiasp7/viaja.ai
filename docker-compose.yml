@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  viajaai:
+    container_name: viajaai
+    image: postgres
+    ports:
+      - "5434:5432"
+    environment:
+      - POSTGRES_USER=viajaai_user
+      - POSTGRES_PASSWORD=viajaai_pwd
+      - POSTGRES_DB=pg_viajaai
