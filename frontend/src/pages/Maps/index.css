@@ -1,0 +1,82 @@
+.maps-wrapper {
+  max-width: 1200px;
+  margin: 1.5rem auto 4rem auto;
+  padding: 0 1rem;
+}
+
+.maps-controls {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.maps-controls input[type="text"] {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--light-gray);
+  font-size: 0.95rem;
+}
+
+.maps-controls button {
+  background-color: var(--primary-color);
+  color: var(--white);
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.maps-controls .secondary {
+  background-color: var(--secondary-color);
+}
+
+.map-container-custom {
+  width: 100%;
+  height: calc(70vh - 40px); /* responsive height */
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+}
+
+.map-loading {
+  position: relative;
+}
+
+.map-loading .loading-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 500;
+}
+
+.loading-spinner {
+  width: 48px;
+  height: 48px;
+  border: 5px solid #eee;
+  border-top-color: var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Leaflet attribution tweak to match app */
+.leaflet-container .leaflet-control-attribution {
+  font-size: 0.75rem;
+  color: #666;
+}
+
+/* Small responsive adjustments */
+@media (max-width: 600px) {
+  .map-container-custom { height: 55vh; }
+  .maps-controls { flex-direction: column; align-items: stretch; }
+  .maps-controls button { width: 100%; }
+}

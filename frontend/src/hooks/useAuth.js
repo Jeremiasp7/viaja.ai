@@ -4,20 +4,64 @@ import api, { setAuthToken } from '../api';
 
 export default function useAuth() {
   const [authenticated, setAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const raw = localStorage.getItem('token');
+    if (!raw) {
+      setLoading(false);
+      return;
+    }
+
+    // normalize token if it was stored as JSON or with quotes
+    let token = raw;
+    try {
+      const parsed = JSON.parse(raw);
+      if (typeof parsed === 'string') token = parsed;
+    } catch (e) {
+      // ignore
+    }
+    if (token.startsWith('"') && token.endsWith('"')) {
+      token = token.slice(1, -1);
+    }
 
     if (token) {
       api.defaults.headers.common.Authorization = `Bearer ${token}`;
       setAuthenticated(true);
-    }
 
-    setLoading(false);
+      // try to fetch user profile using token sub
+      const payload = decodeJwt(token);
+      const userId = payload?.sub;
+      if (userId) {
+        api.get(`/usuarios/${userId}`)
+          .then((resp) => setUser(resp.data))
+          .catch((err) => console.warn('Não foi possível buscar perfil do usuário:', err))
+          .finally(() => setLoading(false));
+      } else {
+        setLoading(false);
+      }
+    } else {
+      setLoading(false);
+    }
   }, []);
 
-  // handleLogin now expects (email, password) and posts to /login
+  function decodeJwt(token) {
+    try {
+      const parts = token.split('.');
+      if (parts.length < 2) return null;
+      const payload = parts[1];
+      // base64url -> base64
+      const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+      const json = decodeURIComponent(atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+      return JSON.parse(json);
+    } catch (e) {
+      return null;
+    }
+  }
+
   async function handleLogin(email, password) {
     try {
       const response = await api.post('/login', { email, senha: password });
@@ -32,6 +76,17 @@ export default function useAuth() {
       setAuthToken(token);
       setAuthenticated(true);
 
+      const payload = decodeJwt(token);
+      const userId = payload?.sub;
+      if (userId) {
+        try {
+          const userResp = await api.get(`/usuarios/${userId}`);
+          setUser(userResp.data);
+        } catch (e) {
+          console.warn('Could not fetch user profile', e);
+        }
+      }
+
       return data;
     } catch (err) {
       if (err.response && err.response.data) {
@@ -45,7 +100,8 @@ export default function useAuth() {
   function handleLogout() {
     setAuthenticated(false);
     setAuthToken(null);
+    setUser(null);
   }
 
-  return { authenticated, loading, handleLogin, handleLogout };
+  return { authenticated, loading, user, handleLogin, handleLogout };
 }
