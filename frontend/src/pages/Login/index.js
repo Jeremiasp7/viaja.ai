@@ -21,19 +21,19 @@ const Login = () => {
     }, [])
 
     const onSubmit = async (data) => {
-                                       
-        setError(''); 
+        setError('');
 
         try {
             console.log('Tentando fazer login com:', data);
             const result = await handleLogin(data.email, data.password);
 
             navigate('/dashboard');
-            console.log('Login bem-sucedido:', result); 
+            console.log('Login bem-sucedido:', result);
 
         } catch (err) {
-            setError(err.message || 'Ocorreu um erro desconhecido ao tentar fazer login.');
-            //console.error('Falha no login:', err.response.data.error || err.message);
+            const message = err.response?.data?.error || err.response?.data?.message || err.message || 'Ocorreu um erro desconhecido ao tentar fazer login.';
+            setError(message);
+            console.error('Falha no login:', message);
         }
     };
 
@@ -73,7 +73,6 @@ const Login = () => {
                         type="password"
                         className="login-input"
                         placeholder="Digite sua senha"
-                        ref={userRef}
                         {...register("password", { required: "Senha é obrigatória" })}
                     />
                     {errors.password && <span className="error-message">Senha é obrigatória</span>}
