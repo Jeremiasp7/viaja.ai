@@ -44,11 +44,67 @@ public class MapsController {
     }
 
     @GetMapping("/route")
-    public ResponseEntity<String> getRoute(@RequestParam double lat1, @RequestParam double lon1,   @RequestParam double lat2, @RequestParam double lon2) {
-        String url = String.format(Locale.US, 
-        "https://router.project-osrm.org/route/v1/driving/%f,%f;%f,%f?overview=full&geometries=geojson",
-        lon1, lat1, lon2, lat2);
+    public ResponseEntity<String> getRouteByAddress(
+            @RequestParam String origin,
+            @RequestParam String destination) {
 
-        return restTemplate.getForEntity(url, String.class);
+        try {
+            var mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+
+            // --- Geocode da origem ---
+            var originResponse = geocode(origin);
+            var originArray = mapper.readTree(originResponse.getBody());
+
+            // Busca alternativa caso não encontre
+            if (originArray.isEmpty() && origin.contains(" ")) {
+                String reducedOrigin = origin.split(",")[0].trim(); // pega apenas a primeira parte
+                originResponse = geocode(reducedOrigin);
+                originArray = mapper.readTree(originResponse.getBody());
+            }
+
+            if (originArray.isEmpty()) {
+                return ResponseEntity.badRequest()
+                        .body("{\"error\": \"Endereço de origem não encontrado.\"}");
+            }
+
+            double lat1 = originArray.get(0).get("lat").asDouble();
+            double lon1 = originArray.get(0).get("lon").asDouble();
+
+            // --- Geocode do destino ---
+            var destResponse = geocode(destination);
+            var destArray = mapper.readTree(destResponse.getBody());
+
+            // Busca alternativa caso não encontre
+            if (destArray.isEmpty() && destination.contains(" ")) {
+                String reducedDestination = destination.split(",")[0].trim();
+                destResponse = geocode(reducedDestination);
+                destArray = mapper.readTree(destResponse.getBody());
+            }
+
+            if (destArray.isEmpty()) {
+                return ResponseEntity.badRequest()
+                        .body("{\"error\": \"Endereço de destino não encontrado.\"}");
+            }
+
+            double lat2 = destArray.get(0).get("lat").asDouble();
+            double lon2 = destArray.get(0).get("lon").asDouble();
+
+            // --- Monta URL da rota ---
+            String routeUrl = String.format(Locale.US,
+                    "https://router.project-osrm.org/route/v1/driving/%f,%f;%f,%f?overview=full&geometries=geojson",
+                    lon1, lat1, lon2, lat2);
+
+            ResponseEntity<String> routeResponse = restTemplate.getForEntity(routeUrl, String.class);
+
+            HttpHeaders cleanHeaders = new HttpHeaders();
+            cleanHeaders.set("Content-Type", "application/json");
+
+            return new ResponseEntity<>(routeResponse.getBody(), cleanHeaders, routeResponse.getStatusCode());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError()
+                    .body("{\"error\": \"Erro ao calcular rota.\"}");
+        }
     }
 }

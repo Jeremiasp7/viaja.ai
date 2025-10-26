@@ -26,14 +26,12 @@ export const reverseGeocode = (lat, lon) => {
 
 /**
  * Busca uma rota entre dois pontos.
- * @param {number} lat1 - Latitude do Ponto A
- * @param {number} lon1 - Longitude do Ponto A
- * @param {number} lat2 - Latitude do Ponto B
- * @param {number} lon2 - Longitude do Ponto B
+ * @param {string} origin - Ponto de origem
+ * @param {string} detination - Ponto de destino
  * @returns {Promise<object>} A resposta da API OSRM com a geometria da rota.
  */
-export const getRoute = (lat1, lon1, lat2, lon2) => {
+export const getRoute = (origin, destination) => {
   return api.get('/maps/route', {
-    params: { lat1, lon1, lat2, lon2 },
+    params: { origin, destination },
   });
 };
