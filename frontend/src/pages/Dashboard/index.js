@@ -1,12 +1,14 @@
 import React from 'react';
 import { FaSearch, FaHome, FaHeart, FaSuitcase, FaCog } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import { Context } from '../../context/AuthContext';
 
 import './index.css';
 
 
 const Dashboard = () => {
-  const userName = "Ana";
+  const { user, authenticated } = React.useContext(Context);
+  const userName = user?.nome || user?.name;
 
   const navigate = useNavigate();
 
@@ -14,7 +16,11 @@ const Dashboard = () => {
     <div className="home-screen">
       <header className="home-header">
         <div className="header-content">
-          <h1>Olá, {userName}!</h1>
+          {authenticated && userName ? (
+            <h1>Olá, {userName}!</h1>
+          ) : (
+            <h1>Olá</h1>
+          )}
           <h2>Para onde vamos viajar hoje?</h2>
           <div className="search-bar">
             <FaSearch className="search-icon" />

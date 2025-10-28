@@ -7,6 +7,7 @@ import Login from './pages/Login/index';
 import Dashboard from './pages/Dashboard/index';
 import MainLayout from './layouts/MainLayout';
 import ItineraryEditor from './pages/ItineraryEditor';
+import Maps from './pages/Maps'
 
 function CustomRoute({ isPrivate, element }) {
   const { loading, authenticated } = useContext(Context);
@@ -35,7 +36,7 @@ export default function AppRoutes() {
       />
       <Route path="/itinerary" element={<CustomRoute isPrivate element={<ItineraryEditor />} />} />
       <Route path="*" element={<h1>404 - Not Found</h1>} />
-      
+      <Route path="/maps" element={<CustomRoute isPrivate element={<Maps />} />} />
     </Routes>
   );
 }
