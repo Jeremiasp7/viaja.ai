@@ -51,13 +51,11 @@ public class MapsController {
         try {
             var mapper = new com.fasterxml.jackson.databind.ObjectMapper();
 
-            // --- Geocode da origem ---
             var originResponse = geocode(origin);
             var originArray = mapper.readTree(originResponse.getBody());
 
-            // Busca alternativa caso não encontre
             if (originArray.isEmpty() && origin.contains(" ")) {
-                String reducedOrigin = origin.split(",")[0].trim(); // pega apenas a primeira parte
+                String reducedOrigin = origin.split(",")[0].trim(); 
                 originResponse = geocode(reducedOrigin);
                 originArray = mapper.readTree(originResponse.getBody());
             }
@@ -89,7 +87,6 @@ public class MapsController {
             double lat2 = destArray.get(0).get("lat").asDouble();
             double lon2 = destArray.get(0).get("lon").asDouble();
 
-            // --- Monta URL da rota ---
             String routeUrl = String.format(Locale.US,
                     "https://router.project-osrm.org/route/v1/driving/%f,%f;%f,%f?overview=full&geometries=geojson",
                     lon1, lat1, lon2, lat2);
