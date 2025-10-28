@@ -62,6 +62,11 @@ public class UserEntity implements UserDetails {
     @JsonIgnore
     private List<BudgetEntity> budgets;
 
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch =FetchType.LAZY)
+	@JsonManagedReference
+    @JsonIgnore
+	private List<UserLocationHistory> locationHistory;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));

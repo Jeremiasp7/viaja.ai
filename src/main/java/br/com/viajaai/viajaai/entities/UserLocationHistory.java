@@ -1,9 +1,9 @@
 package br.com.viajaai.viajaai.entities;
 
-import java.util.List;
+import java.time.LocalDate;
 import java.util.UUID;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -12,37 +12,35 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
-@NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "budgets")
-public class BudgetEntity {
-    
+@NoArgsConstructor
+@Entity(name = "user_location_history")
+@Builder
+public class UserLocationHistory {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    private Double totalAmount;
-    private String currency;
+    private String city;
+    private String country;
 
-    private List<String> categories; //alimentação, transporte, hospedagem, lazer, etc.
+    @Builder.Default
+    private boolean isFavorite = false;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "travel_plan_id")
-    @JsonIgnore
-    private TravelPlanEntity travelPlan;
+    @Builder.Default
+    private boolean hasVisited = false;
+
+    private LocalDate lastVisitedDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    @JsonIgnore
+    @JsonBackReference // Evita loop infinito
     private UserEntity user;
 }

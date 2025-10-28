@@ -12,4 +12,5 @@ public class CreateBudgetDto {
     private String currency;
     private List<String> categories;
     private UUID travelPlanId; // ID do plano de viagem a quem o orçamento se refere
+    private UUID userId;
 }
