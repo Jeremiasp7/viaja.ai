@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import br.com.viajaai.viajaai.entities.UserEntity;
 import br.com.viajaai.viajaai.entities.UsersPreferencesEntity;
+import br.com.viajaai.viajaai.exceptions.PreferenciasNaoEncontradasException;
+import br.com.viajaai.viajaai.exceptions.UsuarioNaoEncontradoException;
 import br.com.viajaai.viajaai.repositories.UserRepository;
 @Service
 public class SugestaoRoteirosService {
@@ -19,11 +21,16 @@ public class SugestaoRoteirosService {
         this.userRepository = userRepository;
     }
 
-    public String gerarRoteiro(UUID userId) {
+    public String gerarRoteiro(UUID userId) throws UsuarioNaoEncontradoException {
         UserEntity user = userRepository.findById(userId)
-            .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+            .orElseThrow(() -> new UsuarioNaoEncontradoException("Usuário não encontrado"));
 
         UsersPreferencesEntity preferencias = user.getPreferences();
+        if (preferencias == null) {
+            throw new PreferenciasNaoEncontradasException(
+                "Usuário não possui preferências cadastradas."
+            );
+        }
 
         String textoDePreferencias = """
                 O usuário quer uma viagem %s, acomodado em um %s, em uma cidade com o clima %s. Ele possui %s para gastar com a viagem. Vai viajar por %s dias com %s. Ele pode viajar em uma das seguintes datas %s.

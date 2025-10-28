@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 
 import br.com.viajaai.viajaai.dto.AtracaoResponseDto;
 import br.com.viajaai.viajaai.entities.UsersPreferencesEntity;
+import br.com.viajaai.viajaai.exceptions.ErroProcessamentoAtracaoException;
+import br.com.viajaai.viajaai.exceptions.PreferenciasNaoEncontradasException;
 import br.com.viajaai.viajaai.exceptions.UsuarioNaoEncontradoException;
 
 import java.util.ArrayList;
@@ -21,18 +23,12 @@ public class AtracaoDescricaoService {
     private final ChatClient chatClient;
     private final UserPreferencesService userPreferencesService;
 
-    @Value("${geoapify.api.key}")
-    private String apiKey;
-
-    @Value("${geoapify.base.url}")
-    private String baseUrl;
-
     public AtracaoDescricaoService(ChatClient.Builder chatClientBuilder, UserPreferencesService userPreferencesService) {
         this.chatClient = chatClientBuilder.build();
         this.userPreferencesService = userPreferencesService;
     }
 
-    public AtracaoResponseDto gerarDescricao(UUID userId, String nome, String cidade, String pais) throws UsuarioNaoEncontradoException {
+    public AtracaoResponseDto gerarDescricao(UUID userId, String nome, String cidade, String pais) throws UsuarioNaoEncontradoException, PreferenciasNaoEncontradasException {
 
         UsersPreferencesEntity preferences = null;
         boolean possuiPreferencias = false;
@@ -49,7 +45,7 @@ public class AtracaoDescricaoService {
                         preferences.getCompanhiaDeViagem() != null ||
                         preferences.getPreferenciaDeDatas() != null;
 
-        } catch (UsuarioNaoEncontradoException e) {
+        } catch (UsuarioNaoEncontradoException | PreferenciasNaoEncontradasException e) {
                 possuiPreferencias = false;
         }
 
@@ -124,14 +120,14 @@ public class AtracaoDescricaoService {
         if (matcher.find()) {
                 respostaLLM = matcher.group(0);
         } else {
-                throw new RuntimeException("Nenhum JSON válido encontrado na resposta do modelo: " + respostaLLM);
+                throw new ErroProcessamentoAtracaoException("Nenhum JSON válido encontrado na resposta do modelo: " + respostaLLM);
         }
 
         JsonNode jsonResponse;
         try {
             jsonResponse = new ObjectMapper().readTree(respostaLLM);
         } catch (Exception e) {
-            throw new RuntimeException("Erro ao interpretar JSON da resposta do modelo: " + respostaLLM);
+            throw new ErroProcessamentoAtracaoException("Erro ao interpretar JSON da resposta do modelo: " + respostaLLM, e);
         }
 
         String descricaoGerada = jsonResponse.path("descricao").asText();

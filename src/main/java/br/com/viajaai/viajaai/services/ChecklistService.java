@@ -4,6 +4,8 @@ import br.com.viajaai.viajaai.dto.ChecklistResponseDto;
 import br.com.viajaai.viajaai.dto.CreateChecklistDto;
 import br.com.viajaai.viajaai.entities.ChecklistEntity;
 import br.com.viajaai.viajaai.entities.TravelPlanEntity;
+import br.com.viajaai.viajaai.exceptions.ChecklistNaoEncontradoException;
+import br.com.viajaai.viajaai.exceptions.TravelPlanNaoEncontradoException;
 import br.com.viajaai.viajaai.repositories.ChecklistRepository;
 import br.com.viajaai.viajaai.repositories.TravelPlanRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +24,7 @@ public class ChecklistService {
 
     public ChecklistResponseDto criarChecklist(CreateChecklistDto dto) {
         TravelPlanEntity travelPlan = travelPlanRepository.findById(UUID.fromString(dto.getTravelPlanId()))
-                .orElseThrow(() -> new RuntimeException("Plano de viagem não encontrado"));
+                .orElseThrow(() -> new TravelPlanNaoEncontradoException("Plano de viagem não encontrado"));
 
         ChecklistEntity checklist = ChecklistEntity.builder()
                 .nome(dto.getNome())
@@ -36,7 +38,7 @@ public class ChecklistService {
 
     public List<ChecklistResponseDto> listarPorPlano(UUID travelPlanId) {
         TravelPlanEntity travelPlan = travelPlanRepository.findById(travelPlanId)
-                .orElseThrow(() -> new RuntimeException("Plano de viagem não encontrado"));
+                .orElseThrow(() -> new TravelPlanNaoEncontradoException("Plano de viagem não encontrado"));
 
         return checklistRepository.findByTravelPlan(travelPlan)
                 .stream()
@@ -46,7 +48,7 @@ public class ChecklistService {
 
     public ChecklistResponseDto buscarPorId(UUID id) {
         ChecklistEntity checklist = checklistRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Checklist não encontrado"));
+                .orElseThrow(() -> new ChecklistNaoEncontradoException("Checklist não encontrado"));
         return toDto(checklist);
     }
 
@@ -63,7 +65,7 @@ public class ChecklistService {
 
     public void deletar(UUID id) {
         ChecklistEntity checklist = checklistRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Checklist não encontrado"));
+                .orElseThrow(() -> new ChecklistNaoEncontradoException("Checklist não encontrado"));
         checklistRepository.delete(checklist);
     }
     

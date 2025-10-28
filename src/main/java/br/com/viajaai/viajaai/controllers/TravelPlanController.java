@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.viajaai.viajaai.dto.CreateTravelPlanDto;
 import br.com.viajaai.viajaai.dto.TravelPlanResponseDto;
+import br.com.viajaai.viajaai.exceptions.UsuarioNaoEncontradoException;
 import br.com.viajaai.viajaai.services.TravelPlanService;
 
 @RestController
@@ -28,13 +29,13 @@ public class TravelPlanController {
 		}
 
     @PostMapping
-    public ResponseEntity<TravelPlanResponseDto> createTravelPlan(@RequestBody CreateTravelPlanDto dto) {
+    public ResponseEntity<TravelPlanResponseDto> createTravelPlan(@RequestBody CreateTravelPlanDto dto) throws UsuarioNaoEncontradoException {
         TravelPlanResponseDto newPlan = travelPlanService.createTravelPlan(dto);
         return new ResponseEntity<>(newPlan, HttpStatus.CREATED);
     }
 
     @GetMapping("/usuario/{userId}")
-    public ResponseEntity<List<TravelPlanResponseDto>> getTravelPlansByUser(@PathVariable UUID userId) {
+    public ResponseEntity<List<TravelPlanResponseDto>> getTravelPlansByUser(@PathVariable UUID userId) throws UsuarioNaoEncontradoException {
         List<TravelPlanResponseDto> plans = travelPlanService.getTravelPlansByUserId(userId);
         return ResponseEntity.ok(plans);
     }
