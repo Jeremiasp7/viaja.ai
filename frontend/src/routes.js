@@ -8,6 +8,7 @@ import Dashboard from './pages/Dashboard/index';
 import MainLayout from './layouts/MainLayout';
 import ItineraryEditor from './pages/ItineraryEditor';
 import Maps from './pages/Maps'
+import SugestaoRoteiros from './pages/SugestaoRoteiros'
 
 function CustomRoute({ isPrivate, element }) {
   const { loading, authenticated } = useContext(Context);
@@ -37,6 +38,7 @@ export default function AppRoutes() {
       <Route path="/itinerary" element={<CustomRoute isPrivate element={<ItineraryEditor />} />} />
       <Route path="*" element={<h1>404 - Not Found</h1>} />
       <Route path="/maps" element={<CustomRoute isPrivate element={<Maps />} />} />
+      <Route path="/sugestoes" element={<CustomRoute isPrivate element={<SugestaoRoteiros />} />} />
     </Routes>
   );
 }

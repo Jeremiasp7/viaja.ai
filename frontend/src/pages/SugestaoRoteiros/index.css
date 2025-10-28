@@ -1,0 +1,47 @@
+.suggestions-page {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 1rem;
+}
+
+.suggestion-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.suggestion-controls h3 { margin: 0 0 0.5rem 0; }
+.suggestion-controls p { margin: 0 0 1rem 0; color: #666; }
+
+.suggestion-controls button {
+  background-color: var(--primary-color);
+  color: var(--white);
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.suggestion-controls input[type="text"] {
+  display: block;
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  margin-bottom: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid var(--light-gray);
+}
+
+.suggestion-result .result-card {
+  background: var(--white);
+  border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+  padding: 1rem;
+}
+
+.hint { color: #666; }
+.error { color: #b00020; margin-bottom: 0.5rem; }
+
+@media (max-width: 800px) {
+  .suggestion-controls { grid-template-columns: 1fr; }
+}
