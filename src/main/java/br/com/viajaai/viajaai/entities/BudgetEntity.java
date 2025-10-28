@@ -38,6 +38,7 @@ public class BudgetEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "travel_plan_id")
+    @JsonIgnore
     private TravelPlanEntity travelPlan;
 
     @ManyToOne(fetch = FetchType.LAZY)

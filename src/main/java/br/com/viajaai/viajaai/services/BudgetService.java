@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import br.com.viajaai.viajaai.dto.CreateBudgetDto;
 import br.com.viajaai.viajaai.entities.BudgetEntity;
 import br.com.viajaai.viajaai.entities.TravelPlanEntity;
+import br.com.viajaai.viajaai.entities.UserEntity;
 import br.com.viajaai.viajaai.repositories.BudgetRepository;
 import br.com.viajaai.viajaai.repositories.TravelPlanRepository;
 import br.com.viajaai.viajaai.repositories.UserRepository;
@@ -31,11 +32,15 @@ public class BudgetService {
         TravelPlanEntity travelPlan = travelPlanRepository.findById(dto.getTravelPlanId())
                 .orElseThrow(() -> new IllegalArgumentException("Plano de viagem não encontrado com o ID: " + dto.getTravelPlanId()));
 
+        UserEntity user = userRepository.findById(dto.getUserId())
+                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado com o ID: " + dto.getTravelPlanId()));
+
         BudgetEntity budget = BudgetEntity.builder()
                 .totalAmount(dto.getTotalAmount())
                 .currency(dto.getCurrency())
                 .categories(dto.getCategories())
                 .travelPlan(travelPlan)
+                .user(user)
                 .build();
         
         return budgetRepository.save(budget);
@@ -50,11 +55,13 @@ public class BudgetService {
     }
 
     public BudgetEntity getBudgetByTravelPlanId(UUID travelPlanId) {
-        TravelPlanEntity travelPlan = budgetRepository.findByTravelPlanId(travelPlanId);
-        if (travelPlan == null) {
+        BudgetEntity budget = budgetRepository.findByTravelPlanId(travelPlanId);
+    
+        if (budget == null) {
             throw new EntityNotFoundException("Orçamento não encontrado para o plano de viagem com o ID: " + travelPlanId);
         }
-        return budgetRepository.findByTravelPlanId(travelPlanId).getBudget();
+
+        return budget;
     }
 
     public BudgetEntity getBudgetById(UUID budgetId) {
