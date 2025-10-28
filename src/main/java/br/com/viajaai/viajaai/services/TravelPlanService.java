@@ -5,12 +5,16 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+
 import br.com.viajaai.viajaai.dto.CreateTravelPlanDto;
+import br.com.viajaai.viajaai.dto.TravelPlanResponseDto;
+import br.com.viajaai.viajaai.dto.DestinationResponseDto;
 import br.com.viajaai.viajaai.entities.DestinationEntity;
 import br.com.viajaai.viajaai.entities.TravelPlanEntity;
 import br.com.viajaai.viajaai.entities.UserEntity;
 import br.com.viajaai.viajaai.repositories.TravelPlanRepository;
 import br.com.viajaai.viajaai.repositories.UserRepository;
+
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +27,7 @@ public class TravelPlanService {
     private final UserRepository userRepository;
 
     @Transactional
-    public TravelPlanEntity createTravelPlan(CreateTravelPlanDto dto) {
+    public TravelPlanResponseDto createTravelPlan(CreateTravelPlanDto dto) {
         UserEntity user = userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado com o ID: " + dto.getUserId()));
 
@@ -38,32 +42,38 @@ public class TravelPlanService {
             return DestinationEntity.builder()
                     .country(destDto.getCountry())
                     .city(destDto.getCity())
-                    .arrivalDate(destDto.getArrivalDate()) // O usuário vai ter que fornecer a data de chegada duas vezes?
+                    .arrivalDate(destDto.getArrivalDate())
                     .departureDate(destDto.getDepartureDate())
-                    .travelPlan(travelPlan) // Associa o destino ao plano
+                    .travelPlan(travelPlan)
                     .build();
         }).collect(Collectors.toList());
 
         travelPlan.setDestinations(destinations);
+        TravelPlanEntity savedPlan = travelPlanRepository.save(travelPlan);
 
-        return travelPlanRepository.save(travelPlan);
+        return toResponseDto(savedPlan);
     }
 
-    public List<TravelPlanEntity> getTravelPlansByUserId(UUID userId) {
+    public List<TravelPlanResponseDto> getTravelPlansByUserId(UUID userId) {
         if (!userRepository.existsById(userId)) {
-             throw new EntityNotFoundException("Usuário não encontrado com o ID: " + userId);
+            throw new EntityNotFoundException("Usuário não encontrado com o ID: " + userId);
         }
-        return travelPlanRepository.findByUserId(userId);
+
+        return travelPlanRepository.findByUserId(userId).stream()
+                .map(this::toResponseDto)
+                .collect(Collectors.toList());
     }
 
-    public TravelPlanEntity getTravelPlanById(UUID id) {
-        return travelPlanRepository.findById(id)
+    public TravelPlanResponseDto getTravelPlanByIdDto(UUID id) {
+        TravelPlanEntity plan = travelPlanRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Plano de viagem não encontrado com o ID: " + id));
+        return toResponseDto(plan);
     }
 
     @Transactional
-    public TravelPlanEntity updateTravelPlan(UUID id, CreateTravelPlanDto dto) {
-        TravelPlanEntity existingPlan = getTravelPlanById(id);
+    public TravelPlanResponseDto updateTravelPlan(UUID id, CreateTravelPlanDto dto) {
+        TravelPlanEntity existingPlan = travelPlanRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Plano de viagem não encontrado com o ID: " + id));
 
         existingPlan.setTitle(dto.getTitle());
         existingPlan.setStartDate(dto.getStartDate());
@@ -71,7 +81,7 @@ public class TravelPlanService {
 
         existingPlan.getDestinations().clear();
 
-        List<DestinationEntity> updatedDestinations = dto.getDestinations().stream().map(destDto -> 
+        List<DestinationEntity> updatedDestinations = dto.getDestinations().stream().map(destDto ->
             DestinationEntity.builder()
                 .country(destDto.getCountry())
                 .city(destDto.getCity())
@@ -80,10 +90,11 @@ public class TravelPlanService {
                 .travelPlan(existingPlan)
                 .build()
         ).collect(Collectors.toList());
-        
+
         existingPlan.getDestinations().addAll(updatedDestinations);
 
-        return travelPlanRepository.save(existingPlan);
+        TravelPlanEntity savedPlan = travelPlanRepository.save(existingPlan);
+        return toResponseDto(savedPlan);
     }
 
     public void deleteTravelPlan(UUID id) {
@@ -91,5 +102,22 @@ public class TravelPlanService {
             throw new EntityNotFoundException("Plano de viagem não encontrado com o ID: " + id);
         }
         travelPlanRepository.deleteById(id);
+    }
+
+    private TravelPlanResponseDto toResponseDto(TravelPlanEntity entity) {
+        List<DestinationResponseDto> destinations = entity.getDestinations().stream()
+                .map(dest -> new DestinationResponseDto(
+                        dest.getCountry(),
+                        dest.getCity(),
+                        dest.getArrivalDate(),
+                        dest.getDepartureDate()))
+                .collect(Collectors.toList());
+
+        return new TravelPlanResponseDto(
+                entity.getId(),
+                entity.getTitle(),
+                entity.getStartDate(),
+                entity.getEndDate(),
+                destinations);
     }
 }

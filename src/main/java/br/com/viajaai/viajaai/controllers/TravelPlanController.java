@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.viajaai.viajaai.dto.CreateTravelPlanDto;
-import br.com.viajaai.viajaai.entities.TravelPlanEntity;
+import br.com.viajaai.viajaai.dto.TravelPlanResponseDto;
 import br.com.viajaai.viajaai.services.TravelPlanService;
 
 @RestController
@@ -28,26 +28,26 @@ public class TravelPlanController {
 		}
 
     @PostMapping
-    public ResponseEntity<TravelPlanEntity> createTravelPlan(@RequestBody CreateTravelPlanDto dto) {
-        TravelPlanEntity newPlan = travelPlanService.createTravelPlan(dto);
+    public ResponseEntity<TravelPlanResponseDto> createTravelPlan(@RequestBody CreateTravelPlanDto dto) {
+        TravelPlanResponseDto newPlan = travelPlanService.createTravelPlan(dto);
         return new ResponseEntity<>(newPlan, HttpStatus.CREATED);
     }
 
     @GetMapping("/usuario/{userId}")
-    public ResponseEntity<List<TravelPlanEntity>> getTravelPlansByUser(@PathVariable UUID userId) {
-        List<TravelPlanEntity> plans = travelPlanService.getTravelPlansByUserId(userId);
+    public ResponseEntity<List<TravelPlanResponseDto>> getTravelPlansByUser(@PathVariable UUID userId) {
+        List<TravelPlanResponseDto> plans = travelPlanService.getTravelPlansByUserId(userId);
         return ResponseEntity.ok(plans);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TravelPlanEntity> getTravelPlanById(@PathVariable UUID id) {
-        TravelPlanEntity plan = travelPlanService.getTravelPlanById(id);
+    public ResponseEntity<TravelPlanResponseDto> getTravelPlanById(@PathVariable UUID id) {
+        TravelPlanResponseDto plan = travelPlanService.getTravelPlanByIdDto(id);
         return ResponseEntity.ok(plan);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TravelPlanEntity> updateTravelPlan(@PathVariable UUID id, @RequestBody CreateTravelPlanDto dto) {
-        TravelPlanEntity updatedPlan = travelPlanService.updateTravelPlan(id, dto);
+    public ResponseEntity<TravelPlanResponseDto> updateTravelPlan(@PathVariable UUID id, @RequestBody CreateTravelPlanDto dto) {
+        TravelPlanResponseDto updatedPlan = travelPlanService.updateTravelPlan(id, dto);
         return ResponseEntity.ok(updatedPlan);
     }
 
