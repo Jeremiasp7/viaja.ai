@@ -16,6 +16,7 @@ import br.com.viajaai.viajaai.entities.UserEntity;
 import br.com.viajaai.viajaai.repositories.BudgetRepository;
 import br.com.viajaai.viajaai.repositories.TravelPlanRepository;
 import br.com.viajaai.viajaai.repositories.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
@@ -60,9 +61,7 @@ public class BudgetService {
     }
 
     public BudgetEntity getBudgetByTravelPlanId(UUID travelPlanId) {
-        TravelPlanEntity travelPlan = budgetRepository.findByTravelPlanId(travelPlanId);
-        if (travelPlan == null) {
-            throw new OrcamentoNaoEncontradoException("Orçamento não encontrado para o plano de viagem com o ID: " + travelPlanId);
+        
         BudgetEntity budget = budgetRepository.findByTravelPlanId(travelPlanId);
     
         if (budget == null) {
@@ -70,7 +69,8 @@ public class BudgetService {
         }
 
         return budget;
-    }
+        
+    } 
 
     public BudgetEntity getBudgetById(UUID budgetId) {
         return budgetRepository.findById(budgetId)

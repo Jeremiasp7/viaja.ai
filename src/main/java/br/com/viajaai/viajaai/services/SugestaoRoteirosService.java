@@ -1,27 +1,33 @@
 package br.com.viajaai.viajaai.services;
 
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Service;
 
+import br.com.viajaai.viajaai.entities.TravelPlanEntity;
 import br.com.viajaai.viajaai.entities.UserEntity;
 import br.com.viajaai.viajaai.entities.UsersPreferencesEntity;
 import br.com.viajaai.viajaai.exceptions.PreferenciasNaoEncontradasException;
+import br.com.viajaai.viajaai.exceptions.TravelPlanNaoEncontradoException;
 import br.com.viajaai.viajaai.exceptions.UsuarioNaoEncontradoException;
+import br.com.viajaai.viajaai.repositories.TravelPlanRepository;
 import br.com.viajaai.viajaai.repositories.UserRepository;
 @Service
 public class SugestaoRoteirosService {
     
     private final ChatClient chatClient;
     private final UserRepository userRepository;
+    private final TravelPlanRepository travelPlanRepository;
 
-    public SugestaoRoteirosService(ChatClient.Builder chatClientBuilder, UserRepository userRepository) {
+    public SugestaoRoteirosService(ChatClient.Builder chatClientBuilder, UserRepository userRepository, TravelPlanRepository travelPlanRepository) {
         this.chatClient = chatClientBuilder.build();
         this.userRepository = userRepository;
+        this.travelPlanRepository = travelPlanRepository;
     }
 
-    public String gerarRoteiro(UUID userId) throws UsuarioNaoEncontradoException {
+    public String gerarRoteiroPreferencias(UUID userId) throws UsuarioNaoEncontradoException {
         UserEntity user = userRepository.findById(userId)
             .orElseThrow(() -> new UsuarioNaoEncontradoException("Usuário não encontrado"));
 
@@ -50,6 +56,44 @@ public class SugestaoRoteirosService {
                 %s.
                 
                 """.formatted(textoDePreferencias);
+
+        return chatClient.prompt()
+                .user(prompt)
+                .call()
+                .content();
+    }
+
+    public String gerarRoteiroTravelPlan(UUID travelPlanId) throws TravelPlanNaoEncontradoException {
+        TravelPlanEntity plan = travelPlanRepository.findById(travelPlanId)
+            .orElseThrow(() -> new TravelPlanNaoEncontradoException(
+                "Plano de viagem não encontrado com o ID: " + travelPlanId));
+
+        // Monta uma descrição textual detalhada do plano
+        String destinosTexto = plan.getDestinations().stream()
+            .map(dest -> "- " + dest.getCity() + ", " + dest.getCountry() +
+                    " (chegada: " + dest.getArrivalDate() +
+                    ", saída: " + dest.getDepartureDate() + ")")
+            .collect(Collectors.joining("\n"));
+
+        String resumoPlano = """
+                O usuário possui um plano de viagem intitulado "%s".
+                Ele planeja viajar de %s até %s, visitando os seguintes destinos:
+                %s
+                """.formatted(
+                    plan.getTitle(),
+                    plan.getStartDate(),
+                    plan.getEndDate(),
+                    destinosTexto
+                );
+
+        String prompt = """
+                Responda em português e de forma direta, sem dar margem para continuar uma conversa. 
+                Haja como uma agência de viagens de alto padrão e monte um roteiro detalhado 
+                com sugestões de atividades, atrações, experiências culturais e gastronômicas 
+                com base no plano de viagem abaixo:
+                
+                %s
+                """.formatted(resumoPlano);
 
         return chatClient.prompt()
                 .user(prompt)
