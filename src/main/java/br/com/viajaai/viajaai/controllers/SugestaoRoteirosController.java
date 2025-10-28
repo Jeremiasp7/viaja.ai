@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.viajaai.viajaai.exceptions.UsuarioNaoEncontradoException;
 import br.com.viajaai.viajaai.services.SugestaoRoteirosService;
 
 @RestController
@@ -20,7 +21,7 @@ public class SugestaoRoteirosController {
     }
 
     @GetMapping("/{userId}")
-    public String gerarTexto(@PathVariable UUID userId) {
+    public String gerarTexto(@PathVariable UUID userId) throws UsuarioNaoEncontradoException {
         return service.gerarRoteiro(userId);
     }
 }

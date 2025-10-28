@@ -12,4 +12,34 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleUsuarioNaoEncontrado(UsuarioNaoEncontradoException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
+
+    @ExceptionHandler(ErroProcessamentoAtracaoException.class)
+    public ResponseEntity<?> handleErroProcessamentoAtracao(ErroProcessamentoAtracaoException ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(OrcamentoNaoEncontradoException.class)
+    public ResponseEntity<?> handleOrcamentoNaoEncontrado(OrcamentoNaoEncontradoException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(OrcamentoJaExisteException.class)
+    public ResponseEntity<?> handleOrcamentoJaExiste(OrcamentoJaExisteException ex) {
+       return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(TravelPlanNaoEncontradoException.class)
+    public ResponseEntity<?> handlePlanoNaoEncontrado(TravelPlanNaoEncontradoException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(ChecklistNaoEncontradoException.class)
+    public ResponseEntity<?> handleChecklistNaoEncontrado(ChecklistNaoEncontradoException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(PreferenciasNaoEncontradasException.class)
+    public ResponseEntity<?> handlePreferenciasNaoEncontradas(PreferenciasNaoEncontradasException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
 }

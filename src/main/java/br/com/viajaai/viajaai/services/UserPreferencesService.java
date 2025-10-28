@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import br.com.viajaai.viajaai.dto.CreateUserPreferencesDto;
 import br.com.viajaai.viajaai.entities.UserEntity;
 import br.com.viajaai.viajaai.entities.UsersPreferencesEntity;
+import br.com.viajaai.viajaai.exceptions.PreferenciasNaoEncontradasException;
 import br.com.viajaai.viajaai.exceptions.UsuarioNaoEncontradoException;
 import br.com.viajaai.viajaai.repositories.UserRepository;
 import br.com.viajaai.viajaai.repositories.UsersPreferencesRepository;
@@ -48,7 +49,7 @@ public class UserPreferencesService {
     // Ajustar a exceção
     public UsersPreferencesEntity buscarPreferenciasDoUsuario(UUID userId) throws UsuarioNaoEncontradoException {
         return usersPreferencesRepository.findByUserId(userId)
-            .orElseThrow(() -> new UsuarioNaoEncontradoException("Este usuário não possui preferências"));
+            .orElseThrow(() -> new PreferenciasNaoEncontradasException("Este usuário não possui preferências cadastradas"));
     }
     
 }

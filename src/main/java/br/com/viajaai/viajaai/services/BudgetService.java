@@ -8,10 +8,13 @@ import org.springframework.stereotype.Service;
 import br.com.viajaai.viajaai.dto.CreateBudgetDto;
 import br.com.viajaai.viajaai.entities.BudgetEntity;
 import br.com.viajaai.viajaai.entities.TravelPlanEntity;
+import br.com.viajaai.viajaai.exceptions.OrcamentoJaExisteException;
+import br.com.viajaai.viajaai.exceptions.OrcamentoNaoEncontradoException;
+import br.com.viajaai.viajaai.exceptions.TravelPlanNaoEncontradoException;
+import br.com.viajaai.viajaai.exceptions.UsuarioNaoEncontradoException;
 import br.com.viajaai.viajaai.repositories.BudgetRepository;
 import br.com.viajaai.viajaai.repositories.TravelPlanRepository;
 import br.com.viajaai.viajaai.repositories.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
@@ -25,11 +28,13 @@ public class BudgetService {
     
     public BudgetEntity createBudget(CreateBudgetDto dto) {
         if (budgetRepository.findByTravelPlanId(dto.getTravelPlanId()) != null) {
-            throw new IllegalArgumentException("Já existe um orçamento para este plano de viagem.");
+            throw new OrcamentoJaExisteException("Já existe um orçamento para este plano de viagem.");
         }
 
         TravelPlanEntity travelPlan = travelPlanRepository.findById(dto.getTravelPlanId())
-                .orElseThrow(() -> new IllegalArgumentException("Plano de viagem não encontrado com o ID: " + dto.getTravelPlanId()));
+                .orElseThrow(() -> new TravelPlanNaoEncontradoException(
+                        "Plano de viagem não encontrado com o ID: " + dto.getTravelPlanId()
+                ));
 
         BudgetEntity budget = BudgetEntity.builder()
                 .totalAmount(dto.getTotalAmount())
@@ -41,9 +46,9 @@ public class BudgetService {
         return budgetRepository.save(budget);
     }
 
-    public List<BudgetEntity> getBudgetsByUserId(UUID userId) {
+    public List<BudgetEntity> getBudgetsByUserId(UUID userId) throws UsuarioNaoEncontradoException {
         if (!userRepository.existsById(userId)) {
-             throw new EntityNotFoundException("Usuário não encontrado com o ID: " + userId);
+             throw new UsuarioNaoEncontradoException("Usuário não encontrado com o ID: " + userId);
         }
 
         return budgetRepository.findByUserId(userId);
@@ -52,20 +57,20 @@ public class BudgetService {
     public BudgetEntity getBudgetByTravelPlanId(UUID travelPlanId) {
         TravelPlanEntity travelPlan = budgetRepository.findByTravelPlanId(travelPlanId);
         if (travelPlan == null) {
-            throw new EntityNotFoundException("Orçamento não encontrado para o plano de viagem com o ID: " + travelPlanId);
+            throw new OrcamentoNaoEncontradoException("Orçamento não encontrado para o plano de viagem com o ID: " + travelPlanId);
         }
         return budgetRepository.findByTravelPlanId(travelPlanId).getBudget();
     }
 
     public BudgetEntity getBudgetById(UUID budgetId) {
         return budgetRepository.findById(budgetId)
-                .orElseThrow(() -> new EntityNotFoundException("Orçamento não encontrado com o ID: " + budgetId));
+                .orElseThrow(() -> new OrcamentoNaoEncontradoException("Orçamento não encontrado com o ID: " + budgetId));
     }
 
     @Transactional
     public BudgetEntity updateBudget(UUID budgetId, CreateBudgetDto dto) {
         BudgetEntity existingBudget = budgetRepository.findById(budgetId)
-                .orElseThrow(() -> new EntityNotFoundException("Orçamento não encontrado com o ID: " + budgetId));
+                .orElseThrow(() -> new OrcamentoNaoEncontradoException("Orçamento não encontrado com o ID: " + budgetId));
 
         existingBudget.setTotalAmount(dto.getTotalAmount());
         existingBudget.setCurrency(dto.getCurrency());
@@ -76,7 +81,7 @@ public class BudgetService {
 
     public void deleteBudget(UUID budgetId) {
         if (!budgetRepository.existsById(budgetId)) {
-            throw new EntityNotFoundException("Orçamento não encontrado com o ID: " + budgetId);
+            throw new OrcamentoNaoEncontradoException("Orçamento não encontrado com o ID: " + budgetId);
         }
         budgetRepository.deleteById(budgetId);
     }

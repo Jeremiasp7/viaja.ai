@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.viajaai.viajaai.dto.CreateBudgetDto;
 import br.com.viajaai.viajaai.entities.BudgetEntity;
+import br.com.viajaai.viajaai.exceptions.UsuarioNaoEncontradoException;
 import br.com.viajaai.viajaai.services.BudgetService;
 
 @RestController
@@ -33,7 +34,7 @@ public class BudgetController {
     }
 
     @GetMapping("/usuario/{userId}")
-    public ResponseEntity<List<BudgetEntity>> getBudgetByUser(@PathVariable UUID userId) {
+    public ResponseEntity<List<BudgetEntity>> getBudgetByUser(@PathVariable UUID userId) throws UsuarioNaoEncontradoException {
         List<BudgetEntity> budgets = budgetService.getBudgetsByUserId(userId);
         return ResponseEntity.ok(budgets);
     }

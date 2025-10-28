@@ -12,6 +12,8 @@ import br.com.viajaai.viajaai.dto.DestinationResponseDto;
 import br.com.viajaai.viajaai.entities.DestinationEntity;
 import br.com.viajaai.viajaai.entities.TravelPlanEntity;
 import br.com.viajaai.viajaai.entities.UserEntity;
+import br.com.viajaai.viajaai.exceptions.TravelPlanNaoEncontradoException;
+import br.com.viajaai.viajaai.exceptions.UsuarioNaoEncontradoException;
 import br.com.viajaai.viajaai.repositories.TravelPlanRepository;
 import br.com.viajaai.viajaai.repositories.UserRepository;
 
@@ -27,9 +29,9 @@ public class TravelPlanService {
     private final UserRepository userRepository;
 
     @Transactional
-    public TravelPlanResponseDto createTravelPlan(CreateTravelPlanDto dto) {
+    public TravelPlanResponseDto createTravelPlan(CreateTravelPlanDto dto) throws UsuarioNaoEncontradoException {
         UserEntity user = userRepository.findById(dto.getUserId())
-                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado com o ID: " + dto.getUserId()));
+                .orElseThrow(() -> new UsuarioNaoEncontradoException("Usuário não encontrado com o ID: " + dto.getUserId()));
 
         TravelPlanEntity travelPlan = TravelPlanEntity.builder()
                 .title(dto.getTitle())
@@ -54,9 +56,9 @@ public class TravelPlanService {
         return toResponseDto(savedPlan);
     }
 
-    public List<TravelPlanResponseDto> getTravelPlansByUserId(UUID userId) {
+    public List<TravelPlanResponseDto> getTravelPlansByUserId(UUID userId) throws UsuarioNaoEncontradoException {
         if (!userRepository.existsById(userId)) {
-            throw new EntityNotFoundException("Usuário não encontrado com o ID: " + userId);
+            throw new UsuarioNaoEncontradoException("Usuário não encontrado com o ID: " + userId);
         }
 
         return travelPlanRepository.findByUserId(userId).stream()
@@ -66,14 +68,14 @@ public class TravelPlanService {
 
     public TravelPlanResponseDto getTravelPlanByIdDto(UUID id) {
         TravelPlanEntity plan = travelPlanRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Plano de viagem não encontrado com o ID: " + id));
+                .orElseThrow(() -> new TravelPlanNaoEncontradoException("Plano de viagem não encontrado com o ID: " + id));
         return toResponseDto(plan);
     }
 
     @Transactional
     public TravelPlanResponseDto updateTravelPlan(UUID id, CreateTravelPlanDto dto) {
         TravelPlanEntity existingPlan = travelPlanRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Plano de viagem não encontrado com o ID: " + id));
+                .orElseThrow(() -> new TravelPlanNaoEncontradoException("Plano de viagem não encontrado com o ID: " + id));
 
         existingPlan.setTitle(dto.getTitle());
         existingPlan.setStartDate(dto.getStartDate());
@@ -99,7 +101,7 @@ public class TravelPlanService {
 
     public void deleteTravelPlan(UUID id) {
         if (!travelPlanRepository.existsById(id)) {
-            throw new EntityNotFoundException("Plano de viagem não encontrado com o ID: " + id);
+            throw new TravelPlanNaoEncontradoException("Plano de viagem não encontrado com o ID: " + id);
         }
         travelPlanRepository.deleteById(id);
     }
