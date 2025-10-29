@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.viajaai.viajaai.dto.RecommendedDestinationDto;
 import br.com.viajaai.viajaai.entities.DestinationEntity;
+import br.com.viajaai.viajaai.exceptions.AIResponseParsingException;
 import br.com.viajaai.viajaai.repositories.DestinationRepository;
 
 import lombok.Data;
@@ -71,7 +72,7 @@ public class DestinationRecommendationService {
                     .call()
                     .entity(new ParameterizedTypeReference<List<RecommendedDestinationDto>>() {});
         } catch (Exception e) {
-            throw new RuntimeException("Erro ao interpretar resposta do modelo de IA: " + e.getMessage(), e);
+            throw new AIResponseParsingException("Erro ao interpretar resposta do modelo de IA: " + e.getMessage(), e);
         }
     }
 }

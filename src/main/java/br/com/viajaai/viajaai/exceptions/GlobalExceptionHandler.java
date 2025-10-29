@@ -42,4 +42,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handlePreferenciasNaoEncontradas(PreferenciasNaoEncontradasException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
+
+    @ExceptionHandler(AIResponseParsingException.class)
+    public ResponseEntity<?> AIResponseParsingException(AIResponseParsingException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
 }

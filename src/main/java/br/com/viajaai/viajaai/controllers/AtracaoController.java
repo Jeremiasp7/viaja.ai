@@ -19,7 +19,7 @@ public class AtracaoController {
 
     @PostMapping("/descricao")
     public ResponseEntity<AtracaoResponseDto> gerarDescricao(@RequestBody AtracaoRequestDto request) throws UsuarioNaoEncontradoException {
-        AtracaoResponseDto response = service.gerarDescricao(request.getUserId(), request.getNome(), request.getCidade(), request.getPais());
+        AtracaoResponseDto response = service.gerarDescricao(request);
         return ResponseEntity.ok(response);
     }
 }
