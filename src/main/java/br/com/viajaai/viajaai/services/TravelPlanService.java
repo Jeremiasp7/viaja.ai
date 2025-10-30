@@ -7,8 +7,10 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import br.com.viajaai.viajaai.dto.CreateTravelPlanDto;
+import br.com.viajaai.viajaai.dto.DayItineraryResponseDto;
 import br.com.viajaai.viajaai.dto.TravelPlanResponseDto;
 import br.com.viajaai.viajaai.dto.DestinationResponseDto;
+import br.com.viajaai.viajaai.entities.DayItineraryEntity;
 import br.com.viajaai.viajaai.entities.DestinationEntity;
 import br.com.viajaai.viajaai.entities.TravelPlanEntity;
 import br.com.viajaai.viajaai.entities.UserEntity;
@@ -17,7 +19,6 @@ import br.com.viajaai.viajaai.exceptions.UsuarioNaoEncontradoException;
 import br.com.viajaai.viajaai.repositories.TravelPlanRepository;
 import br.com.viajaai.viajaai.repositories.UserRepository;
 
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
@@ -50,6 +51,15 @@ public class TravelPlanService {
                     .build();
         }).collect(Collectors.toList());
 
+        List<DayItineraryEntity> dayItinerary = dto.getDayItinerary().stream().map(itineraryDto -> {
+            return DayItineraryEntity.builder()
+                    .title(itineraryDto.getTitle())
+                    .activities(itineraryDto.getActivities())
+                    .travelPlan(travelPlan)
+                    .build();  
+        }).collect(Collectors.toList());
+
+        travelPlan.setDayItinerary(dayItinerary);
         travelPlan.setDestinations(destinations);
         TravelPlanEntity savedPlan = travelPlanRepository.save(travelPlan);
 
@@ -95,6 +105,18 @@ public class TravelPlanService {
 
         existingPlan.getDestinations().addAll(updatedDestinations);
 
+        existingPlan.getDayItinerary().clear();
+
+        List<DayItineraryEntity> updateDayItinerary = dto.getDayItinerary().stream().map(itineraryDto ->
+            DayItineraryEntity.builder()
+                .title(itineraryDto.getTitle())
+                .activities(itineraryDto.getActivities())
+                .travelPlan(existingPlan)
+                .build()
+        ).collect(Collectors.toList());
+
+        existingPlan.getDayItinerary().addAll(updateDayItinerary);
+
         TravelPlanEntity savedPlan = travelPlanRepository.save(existingPlan);
         return toResponseDto(savedPlan);
     }
@@ -114,12 +136,18 @@ public class TravelPlanService {
                         dest.getArrivalDate(),
                         dest.getDepartureDate()))
                 .collect(Collectors.toList());
+        
+        List<DayItineraryResponseDto> dayItinerary = entity.getDayItinerary().stream()
+                .map(itinerary -> new DayItineraryResponseDto(
+                        itinerary.getTitle(),
+                        itinerary.getActivities()))
+                .collect(Collectors.toList());
 
         return new TravelPlanResponseDto(
                 entity.getId(),
                 entity.getTitle(),
                 entity.getStartDate(),
                 entity.getEndDate(),
-                destinations);
+                destinations, dayItinerary);
     }
 }
