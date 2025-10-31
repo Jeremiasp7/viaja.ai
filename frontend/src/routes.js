@@ -10,6 +10,7 @@ import ItineraryEditor from './pages/ItineraryEditor';
 import Maps from './pages/Maps'
 import SugestaoRoteiros from './pages/SugestaoRoteiros'
 import SugestaoDestino from './pages/SugestaoDestino';
+import Settings from './pages/Settings'
 
 function CustomRoute({ isPrivate, element }) {
   const { loading, authenticated } = useContext(Context);
@@ -36,10 +37,12 @@ export default function AppRoutes() {
           path="/dashboard"
           element={<CustomRoute isPrivate element={<Dashboard />} />}
       />
-      <Route path="/itinerary" element={<CustomRoute isPrivate element={<ItineraryEditor />} />} />
+  <Route path="/itinerary" element={<CustomRoute isPrivate element={<ItineraryEditor />} />} />
+  <Route path="/itinerary/:id" element={<CustomRoute isPrivate element={<ItineraryEditor />} />} />
       <Route path="*" element={<h1>404 - Not Found</h1>} />
       <Route path="/maps" element={<CustomRoute isPrivate element={<Maps />} />} />
       <Route path="/sugestoes" element={<CustomRoute isPrivate element={<SugestaoRoteiros />} />} />
+      <Route path="/ajustes" element={<CustomRoute isPrivate element={<Settings />} />} />      
       <Route path="/destinos" element={<CustomRoute isPrivate element={<SugestaoDestino />} />} />
     </Routes>
   );

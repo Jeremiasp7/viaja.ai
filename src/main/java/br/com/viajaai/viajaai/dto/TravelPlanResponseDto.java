@@ -20,4 +20,5 @@ public class TravelPlanResponseDto {
     private LocalDate startDate;
     private LocalDate endDate;
     private List<DestinationResponseDto> destinations;
+    private List<DayItineraryResponseDto> dayItinerary;
 }
