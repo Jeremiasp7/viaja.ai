@@ -4,9 +4,11 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { getTravelPlanById } from '../../services/travelPlans';
 import { Context } from '../../context/AuthContext';
 import { getSuggestionByPreferences, getSuggestionByTravelPlan } from '../../services/sugestaoRoteiros';
+import travelPlanService from "../../services/travelPlans"
 
 import './index.css';
 import TravelMap from '../Maps';
+import SugestaoDestino from "../SugestaoDestino/index.js"
 
 const ItineraryManager = () => {
   const [activeTab, setActiveTab] = useState('manual');
@@ -119,6 +121,12 @@ const ItineraryManager = () => {
           <button 
             className={activeTab === 'ia' ? 'active' : ''} 
             onClick={() => setActiveTab('ia')}>
+            Sugestão da IA
+          </button>
+          <button
+            className={activeTab === "iaDestino" ? "active" : ""}
+            onClick={() => setActiveTab("iaDestino")}
+          >
             Sugestão da IA
           </button>
         </div>
@@ -331,6 +339,27 @@ const ItineraryManager = () => {
           {activeTab === 'manual' && (
             <TravelMap />
           )}
+          {activeTab === 'iaDestino' && (<SugestaoDestino 
+  plan={plan}
+  onAddDestination={async (newDest) => {
+    const updated = { ...plan, destinations: [...(plan.destinations || []), newDest] };
+    setPlan(updated);
+    
+    await travelPlanService.updateTravelPlan(plan.id, {
+      title: updated.title,
+      startDate: updated.startDate,
+      endDate: updated.endDate,
+      userId: updated.userId,
+      destinations: updated.destinations,
+      dayItinerary: updated.dayItinerary || [],
+    });
+  }}
+  userId={user.id}
+
+              />)
+
+          }
+ 
 
           {activeTab === 'ia' && (
             <div className="suggestion-panel">
