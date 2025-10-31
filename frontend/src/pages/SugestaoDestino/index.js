@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import styled from "styled-components";
 import { FaPaperPlane, FaPlus, FaMapMarkerAlt } from "react-icons/fa";
+import api from "../../api"
 
 const Container = styled.div`
   display: flex;
@@ -292,7 +293,7 @@ const EmptyState = styled.div`
   }
 `;
 
-const RecommendationChat = ({ plan, onAddDestination, userId, api }) => {
+const RecommendationChat = ({ plan, onAddDestination, userId }) => {
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
   const [recommendations, setRecommendations] = useState([]);
