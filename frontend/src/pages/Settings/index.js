@@ -1,289 +1,278 @@
-import React, { useContext, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Context } from '../../context/AuthContext';
-import { 
-  FaArrowLeft, FaUser, FaEnvelope, FaLock, FaGlobe, 
-  FaSignOutAlt, FaTrashAlt 
-} from 'react-icons/fa';
-import { updateUser, deleteUser } from '../../services/usuario';
-import { updatePreferencias, createPreferencias, getPreferenciasByUser } from '../../services/preferencias';
-import './index.css';
+import React, { useEffect, useState } from "react";
+import { Context } from "../../context/AuthContext";
+import { useNavigate, useLocation } from "react-router-dom";
+import { FaHome, FaSuitcase, FaHeart, FaCog } from "react-icons/fa";
+import {
+  getUserPreferences,
+  updateUserPreferences,
+} from "../../services/userPreferences";
+import { getSuggestionByPreferences } from "../../services/sugestaoRoteiros";
+import "./index.css";
 
-const Settings = () => {
-  const { user, handleLogout } = useContext(Context);
+export default function Settings() {
+  const { user, authenticated } = React.useContext(Context);
+  const userId = user?.id;
+
   const navigate = useNavigate();
+  const location = useLocation();
+  const path = location.pathname || "/";
+  const isActive = (p) => path === p || path.startsWith(p + "/");
 
-  const [username, setUsername] = useState(user?.nome || user?.name || '');
-  const [email, setEmail] = useState(user?.email || '');
-  const [language, setLanguage] = useState('pt-BR');
-  const [theme, setTheme] = useState('light');
-  const [showPasswordFields, setShowPasswordFields] = useState(false);
-  const [oldPassword, setOldPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [form, setForm] = useState({
+    estiloDeViagem: "",
+    preferenciaDeAcomodacao: "",
+    preferenciaDeClima: "",
+    faixaOrcamentaria: "",
+    duracaoDaViagem: "",
+    companhiaDeViagem: "",
+    preferenciaDeDatas: [],
+  });
+  const [dateInput, setDateInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [suggestion, setSuggestion] = useState("");
+  const [error, setError] = useState(null);
 
-  // Preferências
-  const [estiloDeViagem, setEstiloDeViagem] = useState('');
-  const [preferenciaDeAcomodacao, setPreferenciaDeAcomodacao] = useState('');
-  const [preferenciaDeClima, setPreferenciaDeClima] = useState('');
-  const [faixaOrcamentaria, setFaixaOrcamentaria] = useState('');
-  const [duracaoDaViagem, setDuracaoDaViagem] = useState('');
-  const [companhiaDeViagem, setCompanhiaDeViagem] = useState('');
-  const [preferenciaDeDatas, setPreferenciaDeDatas] = useState([]);
-
-  useState(() => {
-    // Carregar preferências
-    const fetchPreferencias = async () => {
+  useEffect(() => {
+    async function fetch() {
+      if (!authenticated || !userId) return;
       try {
-        const response = await getPreferenciasByUser(user.id);
-        const prefs = response.data;
-        setEstiloDeViagem(prefs.estiloDeViagem || '');
-        setPreferenciaDeAcomodacao(prefs.preferenciaDeAcomodacao || '');
-        setPreferenciaDeClima(prefs.preferenciaDeClima || '');
-        setFaixaOrcamentaria(prefs.faixaOrcamentaria || '');
-        setDuracaoDaViagem(prefs.duracaoDaViagem || '');
-        setCompanhiaDeViagem(prefs.companhiaDeViagem || '');
-        setPreferenciaDeDatas(prefs.preferenciaDeDatas || []);
-      } catch (error) {
-        console.error('Erro ao carregar preferências:', error);
-      }
-    };
-    fetchPreferencias();
-  }, [user.id]);
-
-  const handleSavePreferences = async () => {
-    const payload = {
-      estiloDeViagem,
-      preferenciaDeAcomodacao,
-      preferenciaDeClima,
-      faixaOrcamentaria,
-      duracaoDaViagem,
-      companhiaDeViagem,
-      preferenciaDeDatas
-    };
-
-    try {
-      await updatePreferencias(user.id, payload);
-      alert('Preferências atualizadas com sucesso!');
-    } catch (error) {
-      if (error.response && error.response.status === 404) {
-        try {
-          await createPreferencias(user.id, payload);
-          alert('Preferências criadas com sucesso!');
-        } catch (err) {
-          const message = err.response?.data || 'Erro ao salvar preferências.';
-          alert(message);
-          console.error(message);
+        const resp = await getUserPreferences(userId);
+        if (resp.data) {
+          // Map backend fields to form keys (they should match)
+          setForm({
+            estiloDeViagem: resp.data.estiloDeViagem || "",
+            preferenciaDeAcomodacao: resp.data.preferenciaDeAcomodacao || "",
+            preferenciaDeClima: resp.data.preferenciaDeClima || "",
+            faixaOrcamentaria: resp.data.faixaOrcamentaria || "",
+            duracaoDaViagem: resp.data.duracaoDaViagem || "",
+            companhiaDeViagem: resp.data.companhiaDeViagem || "",
+            preferenciaDeDatas: resp.data.preferenciaDeDatas || [],
+          });
         }
-      } else {
-        const message = error.response?.data || 'Erro ao salvar preferências.';
-        alert(message);
-        console.error(message);
+      } catch (err) {
+        // silent: user may not have preferences yet
+        // console.warn('No preferences found', err);
       }
     }
-  };
+    fetch();
+  }, [authenticated, userId]);
 
-  const handleDateChange = (index, value) => {
-    const newDates = [...preferenciaDeDatas];
-    newDates[index] = value;
-    setPreferenciaDeDatas(newDates);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((f) => ({ ...f, [name]: value }));
   };
 
   const addDate = () => {
-    setPreferenciaDeDatas([...preferenciaDeDatas, '']);
+    if (!dateInput) return;
+    setForm((f) => ({
+      ...f,
+      preferenciaDeDatas: [...f.preferenciaDeDatas, dateInput],
+    }));
+    setDateInput("");
   };
 
-  const removeDate = (index) => {
-    const newDates = preferenciaDeDatas.filter((_, i) => i !== index);
-    setPreferenciaDeDatas(newDates);
+  const removeDate = (idx) => {
+    setForm((f) => ({
+      ...f,
+      preferenciaDeDatas: f.preferenciaDeDatas.filter((_, i) => i !== idx),
+    }));
   };
 
-  const handleChangePassword = async () => {
+  const handleSave = async (e) => {
+    e.preventDefault();
+    if (!userId) return setError("Usuário não autenticado");
+    setSaving(true);
+    setError(null);
     try {
-      await updateUser(user.id, { 
-        nome: username, 
-        email, 
-        senhaAntiga: oldPassword, 
-        novaSenha: newPassword 
-      });
-      alert('Dados alterados com sucesso!');
-      setShowPasswordFields(false);
-    } catch (error) {
-      const message = error.response?.data || 'Erro ao alterar os dados.';
-      alert(message);
-      console.error(error);
+      const payload = {
+        ...form,
+        duracaoDaViagem: form.duracaoDaViagem
+          ? Number(form.duracaoDaViagem)
+          : null,
+      };
+      await updateUserPreferences(userId, payload);
+      setError(null);
+      alert("Preferências salvas com sucesso");
+    } catch (err) {
+      console.error("Erro ao salvar preferências", err);
+      setError(
+        err.response?.data || err.message || "Erro ao salvar preferências",
+      );
+    } finally {
+      setSaving(false);
     }
   };
 
-  const handleDeleteAccount = async () => {
+  const handleGenerateSuggestion = async () => {
+    if (!userId) return setError("Usuário não autenticado");
+    setLoading(true);
+    setSuggestion("");
+    setError(null);
     try {
-      await deleteUser(user.id);
-      alert('Conta excluída com sucesso.');
-      handleLogout();
-    } catch (error) {
-      const message = error.response?.data || 'Erro ao excluir a conta.';
-      alert(message);
-      console.error(error);
+      const resp = await getSuggestionByPreferences(userId);
+      setSuggestion(resp.data || String(resp));
+    } catch (err) {
+      console.error("Erro ao gerar sugestão por preferências", err);
+      setError(err.response?.data || err.message || "Erro ao gerar sugestão");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="settings-page">
-      <header className="settings-header">
-        <button className="back-button" onClick={() => navigate('/')}>
-          <FaArrowLeft />
-        </button>
-        <h1>Ajustes</h1>
-      </header>
+    <>
+      <div className="settings-page container">
+        <h2>Preferências</h2>
+        <div className="settings-grid">
+          <form className="prefs-form" onSubmit={handleSave}>
+            <label>
+              Estilo de Viagem
+              <input
+                name="estiloDeViagem"
+                value={form.estiloDeViagem}
+                onChange={handleChange}
+                placeholder="Ex: Aventura, Relax"
+              />
+            </label>
 
-      <main className="settings-container">
-        {/* Conta */}
-        <section className="settings-section">
-          <h2><FaUser /> Conta</h2>
-          {showPasswordFields ? (
-            <>
-              <div className="settings-field">
-                <label>Nome</label>
-                <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
-              </div>
-              <div className="settings-field">
-                <label><FaEnvelope /> E-mail</label>
-                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-              </div>
-              <div className="settings-field">
-                <label>Senha atual</label>
-                <input type="password" value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} />
-              </div>
-              <div className="settings-field">
-                <label>Nova senha</label>
-                <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
-              </div>
-              <div className="settings-buttons-inline">
-                <button className="btn-primary" onClick={handleChangePassword}>Salvar</button>
-                <button className="btn-secondary" onClick={() => setShowPasswordFields(false)}>Cancelar</button>
-              </div>
-            </>
-          ) : (
-            <button className="btn-secondary" onClick={() => setShowPasswordFields(true)}>
-              <FaLock /> Alterar informações da conta
-            </button>
-          )}
-        </section>
+            <label>
+              Preferência de Acomodação
+              <input
+                name="preferenciaDeAcomodacao"
+                value={form.preferenciaDeAcomodacao}
+                onChange={handleChange}
+                placeholder="Ex: Hotel, Hostel, Airbnb"
+              />
+            </label>
 
-        {/* Preferências */}
-        <section className="settings-section">
-          <h2><FaGlobe /> Preferências</h2>
+            <label>
+              Preferência de Clima
+              <input
+                name="preferenciaDeClima"
+                value={form.preferenciaDeClima}
+                onChange={handleChange}
+                placeholder="Ex: Quente, Frio"
+              />
+            </label>
 
-          <div className="settings-field">
-            <label>Estilo de viagem</label>
-            <input 
-              type="text" 
-              value={estiloDeViagem} 
-              onChange={(e) => setEstiloDeViagem(e.target.value)} 
-              placeholder="Ex: Aventura, Relaxamento..."
-            />
-          </div>
+            <label>
+              Faixa Orçamentária
+              <input
+                name="faixaOrcamentaria"
+                value={form.faixaOrcamentaria}
+                onChange={handleChange}
+                placeholder="Ex: baixo, médio, alto"
+              />
+            </label>
 
-          <div className="settings-field">
-            <label>Tipo de acomodação</label>
-            <input 
-              type="text" 
-              value={preferenciaDeAcomodacao} 
-              onChange={(e) => setPreferenciaDeAcomodacao(e.target.value)} 
-              placeholder="Ex: Hotel 4 estrelas, Hostel..."
-            />
-          </div>
+            <label>
+              Duração da Viagem (dias)
+              <input
+                name="duracaoDaViagem"
+                type="number"
+                min="1"
+                value={form.duracaoDaViagem}
+                onChange={handleChange}
+              />
+            </label>
 
-          <div className="settings-field">
-            <label>Clima preferido</label>
-            <input 
-              type="text" 
-              value={preferenciaDeClima} 
-              onChange={(e) => setPreferenciaDeClima(e.target.value)} 
-              placeholder="Ex: Tropical, Frio..."
-            />
-          </div>
+            <label>
+              Companhia de Viagem
+              <input
+                name="companhiaDeViagem"
+                value={form.companhiaDeViagem}
+                onChange={handleChange}
+                placeholder="Ex: sozinho, casal, família"
+              />
+            </label>
 
-          <div className="settings-field">
-            <label>Faixa orçamentária</label>
-            <input 
-              type="text" 
-              value={faixaOrcamentaria} 
-              onChange={(e) => setFaixaOrcamentaria(e.target.value)} 
-              placeholder="Ex: 2000-5000"
-            />
-          </div>
-
-          <div className="settings-field">
-            <label>Duração da viagem (dias)</label>
-            <input 
-              type="number" 
-              min="1"
-              value={duracaoDaViagem} 
-              onChange={(e) => setDuracaoDaViagem(Number(e.target.value))} 
-              placeholder="Ex: 7"
-            />
-          </div>
-
-          <div className="settings-field">
-            <label>Companhia de viagem</label>
-            <input 
-              type="text" 
-              value={companhiaDeViagem} 
-              onChange={(e) => setCompanhiaDeViagem(e.target.value)} 
-              placeholder="Ex: Amigos, Família..."
-            />
-          </div>
-
-          <div className="settings-field">
-            <label>Datas preferidas</label>
-            {preferenciaDeDatas.map((data, index) => (
-              <div key={index} style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                <input 
-                  type="date" 
-                  value={data} 
-                  onChange={(e) => handleDateChange(index, e.target.value)} 
+            <div className="dates-block">
+              <label>Preferência de Datas</label>
+              <div className="dates-input-row">
+                <input
+                  type="date"
+                  value={dateInput}
+                  onChange={(e) => setDateInput(e.target.value)}
                 />
-                <button className="btn-remove-date" onClick={() => removeDate(index)}>X</button>
+                <button type="button" onClick={addDate}>
+                  Adicionar
+                </button>
               </div>
-            ))}
-            <div>
-              <button className="btn-add-date" onClick={addDate}>Adicionar data</button>
+              <ul className="dates-list">
+                {form.preferenciaDeDatas.map((d, i) => (
+                  <li key={i}>
+                    {d}{" "}
+                    <button type="button" onClick={() => removeDate(i)}>
+                      Remover
+                    </button>
+                  </li>
+                ))}
+              </ul>
             </div>
-          </div>
-        </section>
 
-        {/* Sessão */}
-        <section className="settings-section danger-zone">
-          <h2><FaSignOutAlt /> Sessão</h2>
-          <button className="btn-logout" onClick={handleLogout}>
-            <FaSignOutAlt /> Sair da conta
-          </button>
-          <button className="btn-delete" onClick={() => setShowDeleteModal(true)}>
-            <FaTrashAlt /> Excluir conta
-          </button>
-        </section>
-
-        <div className="settings-actions">
-          <button className="btn-primary" onClick={handleSavePreferences}>Salvar alterações</button>
-        </div>
-      </main>
-
-      {/* Modal de exclusão */}
-      {showDeleteModal && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <h3>Confirmação de exclusão</h3>
-            <p>Tem certeza que deseja excluir sua conta? Esta ação é irreversível.</p>
-            <div className="modal-buttons">
-              <button className="btn-danger" onClick={handleDeleteAccount}>Excluir</button>
-              <button className="btn-secondary" onClick={() => setShowDeleteModal(false)}>Cancelar</button>
+            {error && <div className="error">{String(error)}</div>}
+            <div className="form-actions">
+              <button type="submit" disabled={saving}>
+                {saving ? "Salvando..." : "Salvar Preferências"}
+              </button>
             </div>
-          </div>
+          </form>
+
+          <aside className="prefs-suggestion">
+            <h3>Sugestão de Roteiro (por Preferências)</h3>
+            <p>Gere uma sugestão baseada nas suas preferências salvas.</p>
+            <div className="suggestion-actions">
+              <button
+                className="buttonSubmit"
+                onClick={handleGenerateSuggestion}
+                disabled={loading}
+              >
+                {loading ? "Gerando..." : "Gerar sugestão para mim"}
+              </button>
+            </div>
+            <div className="suggestion-result">
+              {suggestion ? (
+                <pre className="result-pre">{suggestion}</pre>
+              ) : (
+                <div className="hint">Nenhuma sugestão gerada ainda.</div>
+              )}
+            </div>
+          </aside>
         </div>
-      )}
-    </div>
+      </div>
+
+      {/* duplicate footer here so it appears on the Ajustes/Preferências screen as well */}
+      <footer className="app-footer">
+        <div
+          className={`footer-icon ${isActive("/dashboard") ? "active" : ""}`}
+          onClick={() => navigate("/dashboard")}
+        >
+          <FaHome />
+          <p>Início</p>
+        </div>
+        <div
+          className={`footer-icon ${isActive("/itinerary") ? "active" : ""}`}
+          onClick={() => navigate("/dashboard")}
+        >
+          <FaSuitcase />
+          <p>Roteiros</p>
+        </div>
+        <div
+          className={`footer-icon ${isActive("/favoritos") ? "active" : ""}`}
+        >
+          <FaHeart />
+          <p>Favoritos</p>
+        </div>
+        <div
+          className={`footer-icon ${isActive("/ajustes") ? "active" : ""}`}
+          onClick={() => navigate("/ajustes")}
+          title="Preferências"
+        >
+          <FaCog />
+          <p>Preferências</p>
+        </div>
+      </footer>
+    </>
   );
-};
-
-export default Settings;
+}

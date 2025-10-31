@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference; 
 import org.springframework.stereotype.Service;
 
+import br.com.viajaai.viajaai.dto.RecommendDestinationRequestDto;
 import br.com.viajaai.viajaai.dto.RecommendedDestinationDto;
 import br.com.viajaai.viajaai.entities.DestinationEntity;
 import br.com.viajaai.viajaai.exceptions.AIResponseParsingException;
@@ -28,52 +29,77 @@ public class DestinationRecommendationService {
         this.chatClient = chatClientBuilder.build();
     }
 
-    public List<RecommendedDestinationDto> recommendForuser(UUID userId) {
-        List<DestinationEntity> passadas = destinationRepository.findByUserId(userId);
+		public List<RecommendedDestinationDto> recommendForUser(UUID userId, RecommendDestinationRequestDto recommendDestinationRequestDto) {
+				List<DestinationEntity> pastTravels = destinationRepository.findByUserId(userId);
+				
+				String prompt = buildRecommendationPrompt(pastTravels, recommendDestinationRequestDto);
 
-        String contexto = passadas.isEmpty()
-                ? "O usuário ainda não viajou para lugar nenhum."
-                : passadas.stream()
-                        .map(d -> d.getCity() + ", " + d.getCountry())
-                        .collect(Collectors.joining("; "));
+				try {
+						return chatClient.prompt()
+										.user(prompt)
+										.call()
+										.entity(new ParameterizedTypeReference<List<RecommendedDestinationDto>>() {});
+				} catch (Exception e) {
+						throw new AIResponseParsingException("Erro ao interpretar resposta do modelo de IA: " + e.getMessage(), e);
+				}
+		}
 
-        String prompt = """
-                Você é um assistente de viagens personalizado.
-                O usuário já visitou os seguintes destinos: %s.
+		private String buildRecommendationPrompt(List<DestinationEntity> pastTravels, RecommendDestinationRequestDto request) {
+				String travelContext = buildTravelContext(pastTravels);
+				String userPromptContext = buildUserPromptContext(request);
+				
+				return """
+								Você é um assistente de viagens personalizado.
+								%s
+								%s
+								
+								INSTRUÇÕES DE PRIORIDADE:
+								- Se o usuário fez um pedido específico (user prompt), IGNORE o histórico de viagens e foque EXCLUSIVAMENTE no que foi solicitado
+								- Se não há user prompt, baseie as recomendações no histórico de viagens
+								- Se não há histórico nem user prompt, sugira destinos clássicos e variados
+								
+								FORMATO DE SAÍDA REQUERIDO (JSON):
+								[
+									 {
+										 "city": "Nome da cidade",
+										 "country": "País",
+										 "mustVisitPlaces": [
+											 {
+												 "name": "Nome do local turístico real e existente",
+												 "latitude": número decimal,
+												 "longitude": número decimal
+											 }
+										 ]
+									 }
+								]
 
-                Com base nisso, sugira 3 novos destinos que combinem com o perfil do usuário
-                ou que possam expandir suas experiências de viagem.
+								REGRAS CRÍTICAS:
+								- Retorne SOMENTE JSON bruto, sem markdown, sem comentários, sem delimitadores
+								- Sempre retorne exatamente 3 destinos
+								- Coordenadas devem ser precisas e corresponder aos locais reais
+								- Nomes de cidades, países e pontos turísticos devem ser verificáveis
+								""".formatted(travelContext, userPromptContext);
+		}
 
-                Para cada destino sugerido, forneça os seguintes campos em formato JSON:
-                [
-                   {
-                     "city": "Nome da cidade",
-                     "country": "País",
-                     "mustVisitPlaces": [
-                       {
-                         "name": "Nome do local turístico ou ponto de interesse",
-                         "latitude": número,
-                         "longitude": número
-                       }
-                     ]
-                   }
-                ]
+		private String buildTravelContext(List<DestinationEntity> pastTravels) {
+				if (pastTravels.isEmpty()) {
+						return "Histórico de viagens: O usuário ainda não possui histórico de viagens.";
+				}
+				
+				String destinations = pastTravels.stream()
+								.map(d -> d.getCity() + ", " + d.getCountry())
+								.collect(Collectors.joining("; "));
+								
+				return "Histórico de viagens do usuário: " + destinations + ".";
+		}
 
-                Importante:
-                - Retorne **somente JSON bruto**, sem formatação Markdown, sem comentários, sem ```json``` ou ``` delimitadores.
-                - As coordenadas (latitude e longitude) devem ser plausíveis.
-                - Escolha locais que realmente combinem com os interesses inferidos do usuário.
-                - Se o usuário nunca viajou, sugira destinos clássicos e variados.
-                """.formatted(contexto);
-
-        try {
-            return chatClient.prompt()
-                    .user(prompt)
-                    .call()
-                    .entity(new ParameterizedTypeReference<List<RecommendedDestinationDto>>() {});
-        } catch (Exception e) {
-            throw new AIResponseParsingException("Erro ao interpretar resposta do modelo de IA: " + e.getMessage(), e);
-        }
-    }
+		private String buildUserPromptContext(RecommendDestinationRequestDto request) {
+				if (!request.hasUserPrompt()) {
+						return "Pedido específico do usuário: Nenhum pedido específico foi feito.";
+				}
+				
+				return "Pedido específico do usuário: \"" + request.getUserPrompt() + "\" - " +
+							 "DÊ PRIORIDADE MÁXIMA A ESTE PEDIDO E IGNORE O HISTÓRICO DE VIAGENS SE FOR CONTRADITÓRIO.";
+		}
 }
 

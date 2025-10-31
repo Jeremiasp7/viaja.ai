@@ -44,6 +44,10 @@ public class TravelPlanEntity {
     @JsonManagedReference
     private List<DestinationEntity> destinations;
 
+    @OneToMany(mappedBy = "travelPlan", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JsonManagedReference
+    private List<DayItineraryEntity> dayItinerary;
+
     @OneToOne(mappedBy = "travelPlan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private BudgetEntity budget;
 }

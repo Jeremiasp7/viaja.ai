@@ -5,10 +5,25 @@
 }
 
 .maps-controls {
+  display: grid;
+  justify-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+/* Row wrapper to put origin and destination side-by-side */
+.maps-controls .controls-row {
   display: flex;
   gap: 0.5rem;
+  width: 100%;
   align-items: center;
-  margin-bottom: 0.75rem;
+}
+.maps-controls .controls-row .half {
+  flex: 1 1 50%;
+  min-width: 0;
+}
+.maps-controls .controls-row .half[type="text"] {
+  width: 100%;
 }
 
 .maps-controls input[type="text"] {
@@ -78,5 +93,6 @@
 @media (max-width: 600px) {
   .map-container-custom { height: 55vh; }
   .maps-controls { flex-direction: column; align-items: stretch; }
+  .maps-controls .controls-row { flex-direction: column; }
   .maps-controls button { width: 100%; }
 }

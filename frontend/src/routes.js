@@ -1,19 +1,19 @@
-import React, { useContext } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import React, { useContext } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
 
-import { Context } from './context/AuthContext';
+import { Context } from "./context/AuthContext";
 
-import Login from './pages/Login/index';
-import Dashboard from './pages/Dashboard/index';
-import MainLayout from './layouts/MainLayout';
-import ItineraryEditor from './pages/ItineraryEditor';
-import Maps from './pages/Maps'
-import SugestaoRoteiros from './pages/SugestaoRoteiros'
-import SugestaoDestino from './pages/SugestaoDestino';
-import Roteiros from './pages/Roteiros';
-import Settings from './pages/Settings';
-import Register from './pages/Register';
-import Loading from './pages/Loading';
+import Login from "./pages/Login/index";
+import Dashboard from "./pages/Dashboard/index";
+import MainLayout from "./layouts/MainLayout";
+import ItineraryEditor from "./pages/ItineraryEditor";
+import Maps from "./pages/Maps";
+import SugestaoRoteiros from "./pages/SugestaoRoteiros";
+import SugestaoDestino from "./pages/SugestaoDestino";
+import Roteiros from "./pages/Roteiros";
+import Settings from "./pages/Settings";
+import Register from "./pages/Register";
+import Loading from "./pages/Loading";
 
 function CustomRoute({ isPrivate, element }) {
   const { loading, authenticated } = useContext(Context);
@@ -36,22 +36,51 @@ function CustomRoute({ isPrivate, element }) {
 export default function AppRoutes() {
   return (
     <Routes>
-      <Route element={<MainLayout />} >
+      <Route element={<MainLayout />}>
         <Route path="/login" element={<CustomRoute element={<Login />} />} />
-        <Route path="/register" element={<CustomRoute element={<Register />} />} />
+        <Route
+          path="/register"
+          element={<CustomRoute element={<Register />} />}
+        />
       </Route>
       <Route exact path="/" element={<Navigate to="/dashboard" />} />
       <Route
-          path="/dashboard"
-          element={<CustomRoute isPrivate element={<Dashboard />} />}
+        path="/dashboard"
+        element={<CustomRoute isPrivate element={<Dashboard />} />}
       />
-      <Route path="/itinerary" element={<CustomRoute isPrivate element={<ItineraryEditor />} />} />
+      <Route
+        path="/itinerary"
+        element={<CustomRoute isPrivate element={<ItineraryEditor />} />}
+      />
+      <Route
+        path="/itinerary/:id"
+        element={<CustomRoute isPrivate element={<ItineraryEditor />} />}
+      />
       <Route path="*" element={<h1>404 - Not Found</h1>} />
-      <Route path="/maps" element={<CustomRoute isPrivate element={<Maps />} />} />
-      <Route path="/sugestoes" element={<CustomRoute isPrivate element={<SugestaoRoteiros />} />} />
-      <Route path="/destinos" element={<CustomRoute isPrivate element={<SugestaoDestino />} />} />
-      <Route path="/roteiros" element={<CustomRoute isPrivate element={<Roteiros />} />} />
-      <Route path="/ajustes" element={<CustomRoute isPrivate element={<Settings />} />} />
+      <Route
+        path="/maps"
+        element={<CustomRoute isPrivate element={<Maps />} />}
+      />
+      <Route
+        path="/sugestoes"
+        element={<CustomRoute isPrivate element={<SugestaoRoteiros />} />}
+      />
+      <Route
+        path="/ajustes"
+        element={<CustomRoute isPrivate element={<Settings />} />}
+      />
+      <Route
+        path="/destinos"
+        element={<CustomRoute isPrivate element={<SugestaoDestino />} />}
+      />
+      <Route
+        path="/roteiros"
+        element={<CustomRoute isPrivate element={<Roteiros />} />}
+      />
+      <Route
+        path="/ajustes"
+        element={<CustomRoute isPrivate element={<Settings />} />}
+      />
     </Routes>
   );
 }

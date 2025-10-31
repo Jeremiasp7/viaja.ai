@@ -65,6 +65,35 @@
   object-fit: cover;
 }
 
+.plan-cover {
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.2px;
+  padding: 0.6rem 0.8rem;
+}
+.plan-cover-title {
+  display: block;
+  width: 100%;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.95);
+  padding: 0 0.6rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* smaller screens: reduce font-size so long titles fit */
+@media (max-width: 420px) {
+  .plan-cover-title { font-size: 0.92rem; }
+}
+
 .trip-info {
   padding: 1rem;
 }
@@ -111,6 +140,32 @@
 .btn-create:hover {
   background-color: var(--secondary-color);
 }
+
+.create-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+.create-form input {
+  padding: 0.6rem 0.8rem;
+  border-radius: 8px;
+  border: 1px solid #ddd; 
+}
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+.btn-secondary {
+  background: transparent;
+  border: 1px solid #ccc;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.error { color: var(--danger-color, #c0392b); font-size: 0.9rem; }
 
 .suggestion-card p {
   padding: 1rem;

@@ -13,5 +13,6 @@ public class CreateTravelPlanDto {
     private LocalDate endDate;
     private UUID userId; // ID do usuário que está criando o plano
     private List<CreateDestinationDto> destinations;
+    private List<CreateDayItineraryDto> dayItinerary;
 }
 

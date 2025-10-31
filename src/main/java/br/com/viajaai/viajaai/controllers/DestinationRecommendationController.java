@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import br.com.viajaai.viajaai.dto.RecommendDestinationRequestDto;
 import br.com.viajaai.viajaai.dto.RecommendedDestinationDto;
 import br.com.viajaai.viajaai.services.DestinationRecommendationService;
 
@@ -20,8 +21,8 @@ public class DestinationRecommendationController {
         this.service = service;
     }
 
-    @GetMapping("/{userId}")
-    public List<RecommendedDestinationDto> recommendForUser(@PathVariable UUID userId) {
-        return service.recommendForuser(userId);
+    @PostMapping("/{userId}")
+    public List<RecommendedDestinationDto> recommendForUser(@PathVariable UUID userId, @RequestBody RecommendDestinationRequestDto recommendDestinationRequestDto) {
+        return service.recommendForUser(userId, recommendDestinationRequestDto);
     }
 }
