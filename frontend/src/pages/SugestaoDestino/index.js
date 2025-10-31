@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import styled from "styled-components";
-import { FaPaperPlane, FaPlus, FaStar, FaMapMarkerAlt, FaSearch, FaHome, FaHeart, FaSuitcase, FaCog } from "react-icons/fa";
+import { FaPaperPlane, FaPlus, FaStar, FaMapMarkerAlt, FaHome, FaHeart, FaSuitcase, FaCog } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
 import api from "../../api"
@@ -16,7 +16,6 @@ const HomeHeader = styled.header`
   color: var(--white);
   padding: 4rem 2rem;
   text-align: center;
-  border-radius: 0 0 20px 20px;
 `;
 
 const HeaderContent = styled.div`
@@ -63,19 +62,25 @@ const MessageBubble = styled.div`
 
 const InputContainer = styled.div`
   display: flex;
-  padding: 1.5rem;
+  align-items: flex-end; /* Alinha o botão com a base do textarea */
+  padding: 1rem; /* Padding ajustado */
   border-top: 1px solid var(--light-gray);
   background: var(--white);
 `;
 
-const Input = styled.input`
+const TextArea = styled.textarea`
   flex: 1;
-  padding: 1rem 1rem 1rem 3rem;
-  border-radius: 50px;
+  padding: 1rem 1.5rem;
+  border-radius: 20px; /* Raio de borda mais retangular */
   border: none;
   font-size: 1rem;
   background: var(--light-gray);
-  
+  resize: none; /* Impede que o usuário redimensione */
+  overflow-y: auto; /* Adiciona scroll se o texto for muito longo */
+  max-height: 100px; /* Limita o crescimento (aprox. 5 linhas) */
+  font-family: inherit; /* Garante que a fonte seja a mesma do app */
+  line-height: 1.5;
+
   &:focus {
     outline: none;
     background: var(--white);
@@ -87,14 +92,16 @@ const SendButton = styled.button`
   background: var(--primary-color);
   color: var(--white);
   border: none;
-  border-radius: 50px;
-  padding: 1rem 2rem;
+  border-radius: 50%; /* Botão circular */
+  width: 44px;  /* Tamanho fixo */
+  height: 44px; /* Tamanho fixo */
+  padding: 0; /* Remove padding interno */
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  margin-left: 1rem;
-  font-weight: 600;
+  justify-content: center; /* Centraliza o ícone */
+  margin-left: 0.75rem; /* Margem ajustada */
+  flex-shrink: 0; /* Impede que o botão encolha */
   
   &:hover {
     background: #350668;
@@ -104,20 +111,12 @@ const SendButton = styled.button`
     background: #a5a5a5;
     cursor: not-allowed;
   }
-`;
 
-const SearchBar = styled.div`
-  position: relative;
-  max-width: 600px;
-  margin: 1.5rem auto 0;
-`;
-
-const SearchIcon = styled(FaSearch)`
-  position: absolute;
-  left: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #aaa;
+  /* dimensiona o ícone dentro do botão */
+  svg {
+    width: 20px;
+    height: 20px;
+  }
 `;
 
 const RecommendationsSection = styled.section`
@@ -427,11 +426,13 @@ const RecommendationChatPage = () => {
     setMessages(prev => [...prev, userMessage]);
     setInputMessage("");
     setLoading(true);
+    const payload = {
+      "userPrompt": userMessage.text
+    }
 
     try {
       const token = localStorage.getItem("token");
-      const response = await api.get(`/recomendacoes/${user.id}`, {
-        method: 'POST',
+      const response = await api.post(`/recomendacoes/${user.id}`, payload, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
@@ -455,7 +456,7 @@ const RecommendationChatPage = () => {
         throw new Error('Failed to get recommendations');
       }
     } catch (error) {
-      console.log(error)
+      console.log(error.response)
       const errorMessage = {
         id: Date.now() + 1,
         text: "Desculpe, ocorreu um erro ao buscar recomendações. Tente novamente.",
@@ -471,6 +472,13 @@ const RecommendationChatPage = () => {
   const handleAddToHistory = (destination) => {
     setSelectedDestination(destination);
     setModalOpen(true);
+  };
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      
+      handleSendMessage(e);
+    }
   };
 
   const handleSubmitHistory = async (formData) => {
@@ -549,16 +557,6 @@ const RecommendationChatPage = () => {
         <HeaderContent>
           <h1>Olá, {userName}!</h1>
           <h2>Para onde vamos viajar hoje?</h2>
-          <SearchBar>
-            <SearchIcon />
-            <Input
-              type="text"
-              value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
-              placeholder="Pergunte sobre destinos para sua próxima viagem..."
-              disabled={isLoading}
-            />
-          </SearchBar>
         </HeaderContent>
       </HomeHeader>
 
@@ -592,22 +590,24 @@ const RecommendationChatPage = () => {
             )}
             <div ref={messagesEndRef} />
           </MessagesContainer>
-
           <InputContainer>
-            <form onSubmit={handleSendMessage} style={{ display: 'flex', width: '100%', alignItems: 'center' }}>
-              <SearchBar style={{ flex: 1, margin: 0, maxWidth: 'none' }}>
-                <SearchIcon />
-                <Input
-                  type="text"
-                  value={inputMessage}
-                  onChange={(e) => setInputMessage(e.target.value)}
-                  placeholder="Pergunte sobre destinos para sua próxima viagem..."
-                  disabled={isLoading}
-                />
-              </SearchBar>
+            <form onSubmit={handleSendMessage} style={{ display: 'flex', width: '100%', alignItems: 'flex-end' }}>
+              
+              <TextArea
+                rows="1"
+                value={inputMessage}
+                onChange={(e) => setInputMessage(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Pergunte sobre destinos para sua próxima viagem..."
+                disabled={isLoading}
+                onInput={(e) => {
+                  e.target.style.height = 'auto';
+                  e.target.style.height = `${e.target.scrollHeight}px`;
+                }}
+              />
+              
               <SendButton type="submit" disabled={isLoading}>
                 <FaPaperPlane />
-                Enviar
               </SendButton>
             </form>
           </InputContainer>
@@ -619,13 +619,6 @@ const RecommendationChatPage = () => {
             <CardsContainer>
               {recommendations.map((destination, index) => (
                 <RecommendationCard key={index}>
-                  <CardImage 
-                    src={`https://source.unsplash.com/random/600x400/?${destination.city},${destination.country}`}
-                    alt={destination.city}
-                    onError={(e) => {
-                      e.target.src = 'https://via.placeholder.com/600x400?text=Imagem+Indisponível';
-                    }}
-                  />
                   <CardInfo>
                     <CardHeader>
                       <LocationInfo>
