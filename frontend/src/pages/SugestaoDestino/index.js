@@ -30,7 +30,7 @@ const MessagesContainer = styled.div`
 
 const Message = styled.div`
   display: flex;
-  justify-content: ${props => props.isUser ? 'flex-end' : 'flex-start'};
+  justify-content: ${(props) => (props.isUser ? "flex-end" : "flex-start")};
   margin-bottom: 1rem;
 `;
 
@@ -38,10 +38,11 @@ const MessageBubble = styled.div`
   max-width: 70%;
   padding: 1rem 1.5rem;
   border-radius: 1.5rem;
-  background: ${props => props.isUser ? 'var(--primary-color)' : 'var(--white)'};
-  color: ${props => props.isUser ? 'var(--white)' : 'var(--text-color)'};
+  background: ${(props) =>
+    props.isUser ? "var(--primary-color)" : "var(--white)"};
+  color: ${(props) => (props.isUser ? "var(--white)" : "var(--text-color)")};
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border: ${props => !props.isUser ? '1px solid #e2e8f0' : 'none'};
+  border: ${(props) => (!props.isUser ? "1px solid #e2e8f0" : "none")};
 `;
 
 const InputContainer = styled.div`
@@ -87,11 +88,11 @@ const SendButton = styled.button`
   justify-content: center;
   margin-left: 0.75rem;
   flex-shrink: 0;
-  
+
   &:hover {
     background: #350668;
   }
-  
+
   &:disabled {
     background: #a5a5a5;
     cursor: not-allowed;
@@ -127,10 +128,12 @@ const RecommendationCard = styled.div`
   border-radius: 0.75rem;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
   cursor: pointer;
   border: 1px solid #e2e8f0;
-  
+
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -176,7 +179,7 @@ const AddButton = styled.button`
   gap: 0.5rem;
   font-size: 0.85rem;
   font-weight: 600;
-  
+
   &:hover {
     background: #e57a00;
   }
@@ -199,7 +202,7 @@ const PlaceItem = styled.li`
   padding: 0.5rem 0;
   border-bottom: 1px solid var(--light-gray);
   font-size: 0.85rem;
-  
+
   &:last-child {
     border-bottom: none;
   }
@@ -242,12 +245,18 @@ const Dot = styled.div`
   border-radius: 50%;
   background: var(--primary-color);
   animation: bounce 1.4s infinite ease-in-out;
-  
-  &:nth-child(1) { animation-delay: -0.32s; }
-  &:nth-child(2) { animation-delay: -0.16s; }
-  
+
+  &:nth-child(1) {
+    animation-delay: -0.32s;
+  }
+  &:nth-child(2) {
+    animation-delay: -0.16s;
+  }
+
   @keyframes bounce {
-    0%, 80%, 100% {
+    0%,
+    80%,
+    100% {
       transform: scale(0.8);
       opacity: 0.5;
     }
@@ -308,38 +317,42 @@ const RecommendationChat = ({ plan, onAddDestination, userId, api }) => {
       id: Date.now(),
       text: inputMessage,
       isUser: true,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    setMessages((prev) => [...prev, userMessage]);
     setInputMessage("");
     setLoading(true);
 
     try {
       const token = localStorage.getItem("token");
-      const response = await api.post(`/recomendacoes/${userId}`, {
-        "userPrompt": userMessage.text
-      }, {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      const response = await api.post(
+        `/recomendacoes/${userId}`,
+        {
+          userPrompt: userMessage.text,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
 
       if (response.status === 200) {
         const data = response.data;
-        
+
         const botMessage = {
           id: Date.now() + 1,
           text: "Aqui estão algumas recomendações baseadas no seu histórico de viagens!",
           isUser: false,
-          timestamp: new Date()
+          timestamp: new Date(),
         };
 
-        setMessages(prev => [...prev, botMessage]);
+        setMessages((prev) => [...prev, botMessage]);
         setRecommendations(data);
       } else {
-        throw new Error('Failed to get recommendations');
+        throw new Error("Failed to get recommendations");
       }
     } catch (error) {
       console.error("Error getting recommendations:", error);
@@ -347,9 +360,9 @@ const RecommendationChat = ({ plan, onAddDestination, userId, api }) => {
         id: Date.now() + 1,
         text: "Desculpe, ocorreu um erro ao buscar recomendações. Tente novamente.",
         isUser: false,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
-      setMessages(prev => [...prev, errorMessage]);
+      setMessages((prev) => [...prev, errorMessage]);
     } finally {
       setLoading(false);
     }
@@ -388,7 +401,7 @@ const RecommendationChat = ({ plan, onAddDestination, userId, api }) => {
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage(e);
     }
@@ -475,7 +488,7 @@ const RecommendationChat = ({ plan, onAddDestination, userId, api }) => {
                         {saving ? "Adicionando..." : "Adicionar"}
                       </AddButton>
                     </CardHeader>
-                    
+
                     <div>
                       <h5
                         style={{
@@ -487,17 +500,19 @@ const RecommendationChat = ({ plan, onAddDestination, userId, api }) => {
                         Locais para visitar:
                       </h5>
                       <PlacesList>
-                        {destination.mustVisitPlaces.map((place, placeIndex) => (
-                          <PlaceItem key={placeIndex}>
-                            <PlaceIcon />
-                            <PlaceInfo>
-                              <PlaceName>{place.name}</PlaceName>
-                              <Coordinates>
-                                Lat: {place.latitude}, Lng: {place.longitude}
-                              </Coordinates>
-                            </PlaceInfo>
-                          </PlaceItem>
-                        ))}
+                        {destination.mustVisitPlaces.map(
+                          (place, placeIndex) => (
+                            <PlaceItem key={placeIndex}>
+                              <PlaceIcon />
+                              <PlaceInfo>
+                                <PlaceName>{place.name}</PlaceName>
+                                <Coordinates>
+                                  Lat: {place.latitude}, Lng: {place.longitude}
+                                </Coordinates>
+                              </PlaceInfo>
+                            </PlaceItem>
+                          ),
+                        )}
                       </PlacesList>
                     </div>
                   </CardInfo>
