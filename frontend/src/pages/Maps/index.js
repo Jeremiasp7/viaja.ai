@@ -135,20 +135,24 @@ function TravelMap() {
           {loadingGeocode ? 'Buscando...' : 'Buscar Endereço'}
         </button>
 
-        <input
-          type="text"
-          value={origin}
-          onChange={(e) => setOrigin(e.target.value)}
-          placeholder="Digite a origem"
-          aria-label="Endereço de origem"
-        />
-        <input
-          type="text"
-          value={destination}
-          onChange={(e) => setDestination(e.target.value)}
-          placeholder="Digite o destino"
-          aria-label="Endereço de destino"
-        />
+        <div className="controls-row">
+          <input
+            className="half"
+            type="text"
+            value={origin}
+            onChange={(e) => setOrigin(e.target.value)}
+            placeholder="Digite a origem"
+            aria-label="Endereço de origem"
+          />
+          <input
+            className="half"
+            type="text"
+            value={destination}
+            onChange={(e) => setDestination(e.target.value)}
+            placeholder="Digite o destino"
+            aria-label="Endereço de destino"
+          />
+        </div>
         <button onClick={handleFindRoute} className="secondary" aria-busy={loadingRoute}>
           {loadingRoute ? 'Carregando rota...' : 'Buscar rota'}
         </button>
