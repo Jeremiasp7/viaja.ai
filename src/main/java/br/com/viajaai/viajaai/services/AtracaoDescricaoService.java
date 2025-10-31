@@ -100,6 +100,22 @@ public class AtracaoDescricaoService {
                 - Inclua curiosidades e dicas práticas.
                 - Gere também um checklist com mínimo 5 itens úteis para visitar a atração.
                 - Retorne SOMENTE o JSON puro, sem explicações, sem markdown, sem ``` e sem texto antes ou depois.
+                - As informações do perfil do viajante seguem esse modelo, se qualquer um destes campos tiver uma informação incongruente com o formato ignore-a.:
+
+                {
+                    "estiloDeViagem": "Aventura",
+                    "preferenciaDeAcomodacao": "Hotel 4 estrelas",
+                    "preferenciaDeClima": "Tropical",
+                    "faixaOrcamentaria": "2000-5000",
+                    "duracaoDaViagem": "7",
+                    "companhiaDeViagem": "Amigos",
+                    "preferenciaDeDatas": [
+                        "2025-12-15",
+                        "2025-12-16",
+                        "2025-12-22"
+                    ]
+                }
+            
                 - O JSON deve ter exatamente este formato:
 
                 {

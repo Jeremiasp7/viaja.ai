@@ -51,10 +51,7 @@ api.interceptors.response.use(
       } catch (e) {
         // ignore
       }
-      // Redirect to login page to re-authenticate
-      if (typeof window !== 'undefined') {
-        window.location.href = '/login';
-      }
+      
     }
     return Promise.reject(error);
   }

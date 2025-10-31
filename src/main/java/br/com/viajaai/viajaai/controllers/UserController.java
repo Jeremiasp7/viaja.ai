@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import br.com.viajaai.viajaai.dto.CreateUserDto;
+import br.com.viajaai.viajaai.dto.UpdateUserDto;
 import br.com.viajaai.viajaai.entities.UserEntity;
 import br.com.viajaai.viajaai.exceptions.UsuarioNaoEncontradoException;
 import br.com.viajaai.viajaai.services.UserService;
@@ -28,7 +29,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public UserEntity atualizar(@PathVariable UUID id, @RequestBody CreateUserDto dto) throws UsuarioNaoEncontradoException {
+    public UserEntity atualizar(@PathVariable UUID id, @RequestBody UpdateUserDto dto) throws UsuarioNaoEncontradoException {
         return service.atualizarUsuario(id, dto);
     }
 

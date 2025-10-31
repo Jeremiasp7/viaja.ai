@@ -97,7 +97,7 @@ function TravelMap() {
       const encodedOrigin = encodeURIComponent(origin);
       const encodedDestination = encodeURIComponent(destination);
       const url = `http://localhost:8080/maps/route?origin=${encodedOrigin}&destination=${encodedDestination}`;
-      console.log("Requisição da rota:", url);
+      //console.log("Requisição da rota:", url);
 
       if (response.data && response.data.routes && response.data.routes.length > 0) {
         const geometry = response.data.routes[0].geometry;

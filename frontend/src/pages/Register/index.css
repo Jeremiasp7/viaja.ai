@@ -1,0 +1,14 @@
+.success-message {
+  color: #28a745;
+  font-size: 0.9rem;
+  text-align: center;
+  margin-bottom: 10px;
+}
+.link-text {
+  color: var(--primary-color);
+  font-weight: bold;
+  cursor: pointer;
+}
+.link-text:hover {
+  text-decoration: underline;
+}

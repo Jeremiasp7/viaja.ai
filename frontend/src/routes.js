@@ -10,12 +10,20 @@ import ItineraryEditor from './pages/ItineraryEditor';
 import Maps from './pages/Maps'
 import SugestaoRoteiros from './pages/SugestaoRoteiros'
 import SugestaoDestino from './pages/SugestaoDestino';
+import Roteiros from './pages/Roteiros';
+import Settings from './pages/Settings';
+import Register from './pages/Register';
+import Loading from './pages/Loading';
 
 function CustomRoute({ isPrivate, element }) {
   const { loading, authenticated } = useContext(Context);
 
   if (loading) {
-    return <h1>Loading...</h1>;
+    return <Loading />;
+  }
+
+  if (!isPrivate) {
+    return element;
   }
 
   if (isPrivate && !authenticated) {
@@ -30,6 +38,7 @@ export default function AppRoutes() {
     <Routes>
       <Route element={<MainLayout />} >
         <Route path="/login" element={<CustomRoute element={<Login />} />} />
+        <Route path="/register" element={<CustomRoute element={<Register />} />} />
       </Route>
       <Route exact path="/" element={<Navigate to="/dashboard" />} />
       <Route
@@ -41,6 +50,8 @@ export default function AppRoutes() {
       <Route path="/maps" element={<CustomRoute isPrivate element={<Maps />} />} />
       <Route path="/sugestoes" element={<CustomRoute isPrivate element={<SugestaoRoteiros />} />} />
       <Route path="/destinos" element={<CustomRoute isPrivate element={<SugestaoDestino />} />} />
+      <Route path="/roteiros" element={<CustomRoute isPrivate element={<Roteiros />} />} />
+      <Route path="/ajustes" element={<CustomRoute isPrivate element={<Settings />} />} />
     </Routes>
   );
 }
