@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { FaArrowLeft, FaPlus, FaMapMarkerAlt, FaCalendarAlt } from 'react-icons/fa';
+import { useLocation } from 'react-router-dom';
+import { FaArrowLeft, FaPlus, FaMapMarkerAlt, FaCalendarAlt, FaHome, FaCog, FaHeart, FaSuitcase } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { Context } from '../../context/AuthContext';
 import { getRoteirosByUser } from '../../services/roteiros';
@@ -9,6 +10,9 @@ const Roteiros = () => {
   const navigate = useNavigate();
   const { user } = useContext(Context);
   const [roteiros, setRoteiros] = useState([]);
+  const location = useLocation();
+  const path = location.pathname || "/";
+  const isActive = (p) => path === p || path.startsWith(p + "/");
 
   useEffect(() => {
     const fetchRoteiros = async () => {
@@ -42,9 +46,6 @@ const Roteiros = () => {
   return (
     <div className="trips-page">
       <header className="trips-header">
-        <button className="back-button" onClick={() => navigate('/')}>
-          <FaArrowLeft />
-        </button>
         <h1>Meus Roteiros</h1>
       </header>
 
@@ -93,6 +94,39 @@ const Roteiros = () => {
           </div>
         )}
       </main>
+
+
+      {/* ---- Rodapé ---- */}
+      <footer className="app-footer">
+        <div
+          className={`footer-icon ${isActive("/dashboard") ? "active" : ""}`}
+          onClick={() => navigate("/dashboard")}
+        >
+          <FaHome />
+          <p>Início</p>
+        </div>
+        <div
+          className={`footer-icon ${isActive("/roteiros") ? "active" : ""}`}
+          onClick={() => navigate("/roteiros")}
+        >
+          <FaSuitcase />
+          <p>Roteiros</p>
+        </div>
+        <div
+          className={`footer-icon ${isActive("/favoritos") ? "active" : ""}`}
+        >
+          <FaHeart />
+          <p>Favoritos</p>
+        </div>
+        <div
+          className={`footer-icon ${isActive("/ajustes") ? "active" : ""}`}
+          onClick={() => navigate("/ajustes")}
+          title="Preferências"
+        >
+          <FaCog />
+          <p>Preferências</p>
+        </div>
+      </footer>
     </div>
   );
 };
