@@ -184,12 +184,12 @@ const ItineraryManager = () => {
           <button 
             className={activeTab === 'ia' ? 'active' : ''} 
             onClick={() => setActiveTab('ia')}>
-            Sugestão da IA
+            Gerar Roteiro
           </button>
           <button 
             className={activeTab === 'iaDestino' ? 'active' : ''} 
             onClick={() => setActiveTab('iaDestino')}>
-            Sugestão da IA
+            Descubra Destinos
           </button>
         </div>
       </header>

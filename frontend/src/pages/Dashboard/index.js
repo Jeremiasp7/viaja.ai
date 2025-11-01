@@ -23,6 +23,10 @@ const Dashboard = () => {
   const userName = user?.nome || user?.name;
   const userId = user?.id;
   const [roteiros, setRoteiros] = useState([]);
+  const [showCreate, setShowCreate] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [form, setForm] = useState({ title: '', startDate: '', endDate: '' });
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -65,6 +69,47 @@ const Dashboard = () => {
       images[country] ||
       "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80"
     );
+  };
+
+  const handleCreateToggle = () => {
+    setError(null);
+    setShowCreate((s) => !s);
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((f) => ({ ...f, [name]: value }));
+  };
+
+  const handleCreate = async (e) => {
+    e.preventDefault();
+    setError(null);
+    if (!form.title || !form.startDate || !form.endDate) {
+      setError('Preencha todos os campos obrigatórios.');
+      return;
+    }
+    const payload = {
+      title: form.title,
+      startDate: form.startDate,
+      endDate: form.endDate,
+      userId: userId,
+      destinations: [],
+      dayItinerary: [],
+    };
+    setCreating(true);
+    try {
+      const resp = await createTravelPlan(payload);
+      // refresh list
+      const updated = await getRoteirosByUser(userId);
+      setRoteiros(updated.data || []);
+      setShowCreate(false);
+      setForm({ title: '', startDate: '', endDate: '' });
+    } catch (err) {
+      console.error('Erro ao criar travel plan:', err);
+      setError(err.response?.data || err.message || 'Erro ao criar roteiro.');
+    } finally {
+      setCreating(false);
+    }
   };
 
   return (
@@ -133,18 +178,109 @@ const Dashboard = () => {
 
                 {/* Card para criar nova viagem */}
                 <div className="trip-card new-trip">
-                  <button
-                    className="btn-create"
-                    onClick={() => navigate("/itinerary")}
-                  >
-                    + Criar Roteiro
-                  </button>
+                  {!showCreate ? (
+                    <>
+                      <h4>Novo Roteiro</h4>
+                      <button
+                        className="btn-create"
+                        onClick={handleCreateToggle}
+                      >
+                        + Criar Roteiro
+                      </button>
+                    </>
+                  ) : (
+                    <form className="create-form" onSubmit={handleCreate}>
+                      <input 
+                        name="title" 
+                        value={form.title} 
+                        onChange={handleChange} 
+                        placeholder="Título do roteiro" 
+                      />
+                      <input 
+                        name="startDate" 
+                        value={form.startDate} 
+                        onChange={handleChange} 
+                        type="date" 
+                      />
+                      <input 
+                        name="endDate" 
+                        value={form.endDate} 
+                        onChange={handleChange} 
+                        type="date" 
+                      />
+                      {error && <div className="error">{String(error)}</div>}
+                      <div className="form-actions">
+                        <button 
+                          type="button" 
+                          className="btn-secondary" 
+                          onClick={handleCreateToggle}
+                        >
+                          Cancelar
+                        </button>
+                        <button 
+                          type="submit" 
+                          className="btn-create" 
+                          disabled={creating}
+                        >
+                          {creating ? 'Criando...' : 'Criar'}
+                        </button>
+                      </div>
+                    </form>
+                  )}
                 </div>
               </>
             ) : (
-              <p className="no-trips">
-                Você ainda não possui roteiros criados.
-              </p>
+              <div className="trip-card new-trip">
+                {!showCreate ? (
+                  <>
+                    <h4>Novo Roteiro</h4>
+                    <button
+                      className="btn-create"
+                      onClick={handleCreateToggle}
+                    >
+                      + Criar Roteiro
+                    </button>
+                  </>
+                ) : (
+                  <form className="create-form" onSubmit={handleCreate}>
+                    <input 
+                      name="title" 
+                      value={form.title} 
+                      onChange={handleChange} 
+                      placeholder="Título do roteiro" 
+                    />
+                    <input 
+                      name="startDate" 
+                      value={form.startDate} 
+                      onChange={handleChange} 
+                      type="date" 
+                    />
+                    <input 
+                      name="endDate" 
+                      value={form.endDate} 
+                      onChange={handleChange} 
+                      type="date" 
+                    />
+                    {error && <div className="error">{String(error)}</div>}
+                    <div className="form-actions">
+                      <button 
+                        type="button" 
+                        className="btn-secondary" 
+                        onClick={handleCreateToggle}
+                      >
+                        Cancelar
+                      </button>
+                      <button 
+                        type="submit" 
+                        className="btn-create" 
+                        disabled={creating}
+                      >
+                        {creating ? 'Criando...' : 'Criar'}
+                      </button>
+                    </div>
+                  </form>
+                )}
+              </div>
             )}
           </div>
         </section>
