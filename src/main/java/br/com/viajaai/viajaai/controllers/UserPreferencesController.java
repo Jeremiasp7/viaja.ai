@@ -23,6 +23,11 @@ public class UserPreferencesController {
         return preferencesService.buscarPreferenciasDoUsuario(userId);
     }
 
+    @PutMapping("/{userId}")
+    public UsersPreferencesEntity update(@PathVariable UUID userId, @RequestBody CreateUserPreferencesDto preferencias) throws UsuarioNaoEncontradoException {
+        return preferencesService.atualizarPreferencias(userId, preferencias);
+    }
+
     @PostMapping("/{userId}")
     public UsersPreferencesEntity create(@PathVariable UUID userId, @RequestBody CreateUserPreferencesDto preferencias) throws UsuarioNaoEncontradoException {
         return preferencesService.atualizarPreferencias(userId, preferencias);

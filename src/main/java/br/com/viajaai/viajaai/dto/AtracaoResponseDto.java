@@ -1,6 +1,9 @@
 package br.com.viajaai.viajaai.dto;
 
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.*;
 
 @Data
@@ -12,5 +15,7 @@ public class AtracaoResponseDto {
     private String cidade;
     private String pais;
     private String descricao;
+
+    @JsonProperty("checklist_sugerido")
     private List<String> checklistSugerido;
 }

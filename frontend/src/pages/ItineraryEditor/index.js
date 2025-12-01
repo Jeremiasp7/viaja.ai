@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { FaArrowLeft, FaHotel, FaUtensils, FaLandmark, FaPlus, FaTrash } from 'react-icons/fa';
+import { FaArrowLeft, FaHotel, FaUtensils, FaLandmark, FaPlus, FaTrash, FaEdit } from 'react-icons/fa';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getTravelPlanById } from '../../services/travelPlans';
 import { Context } from '../../context/AuthContext';
 import { getSuggestionByPreferences, getSuggestionByTravelPlan } from '../../services/sugestaoRoteiros';
+import travelPlanService from "../../services/travelPlans"
 
 import './index.css';
 import TravelMap from '../Maps';
+import SugestaoDestino from "../SugestaoDestino/index.js"
 
 const ItineraryManager = () => {
   const [activeTab, setActiveTab] = useState('manual');
@@ -16,7 +18,8 @@ const ItineraryManager = () => {
   const [dateForm, setDateForm] = useState({ startDate: '', endDate: '' });
   const [showDestForm, setShowDestForm] = useState(false);
   const [destForm, setDestForm] = useState({ country: '', city: '', arrivalDate: '', departureDate: '' });
-  const [addingActivityFor, setAddingActivityFor] = useState(null); // index of day where adding
+  const [editingDestinationIndex, setEditingDestinationIndex] = useState(null);
+  const [addingActivityFor, setAddingActivityFor] = useState(null);
   const [newActivityText, setNewActivityText] = useState('');
   const [saving, setSaving] = useState(false);
 
@@ -68,6 +71,68 @@ const ItineraryManager = () => {
     }
   }
 
+  const handleEditDestination = (index) => {
+    const destination = plan.destinations[index];
+    setDestForm({
+      country: destination.country || '',
+      city: destination.city || '',
+      arrivalDate: destination.arrivalDate || '',
+      departureDate: destination.departureDate || ''
+    });
+    setEditingDestinationIndex(index);
+    setShowDestForm(true);
+  };
+
+  const handleSaveDestination = async () => {
+    if (!plan) return;
+
+    setSaving(true);
+    try {
+      let updated;
+      
+      if (editingDestinationIndex !== null) {
+        // Editing existing destination
+        updated = {
+          ...plan,
+          destinations: plan.destinations.map((dest, index) =>
+            index === editingDestinationIndex ? destForm : dest
+          )
+        };
+      } else {
+        // Adding new destination
+        updated = {
+          ...plan,
+          destinations: [...(plan.destinations || []), destForm]
+        };
+      }
+
+      await travelPlanService.updateTravelPlan(id, {
+        title: updated.title,
+        startDate: updated.startDate,
+        endDate: updated.endDate,
+        userId: updated.userId,
+        destinations: updated.destinations,
+        dayItinerary: updated.dayItinerary || [],
+      });
+
+      setPlan(updated);
+      setDestForm({ country: '', city: '', arrivalDate: '', departureDate: '' });
+      setShowDestForm(false);
+      setEditingDestinationIndex(null);
+    } catch (err) {
+      console.error('Erro ao salvar destino:', err);
+      alert('Erro ao salvar destino');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setDestForm({ country: '', city: '', arrivalDate: '', departureDate: '' });
+    setShowDestForm(false);
+    setEditingDestinationIndex(null);
+  };
+
   return (
     <div className="planner-screen">
       <header className="planner-header">
@@ -88,14 +153,14 @@ const ItineraryManager = () => {
                   const updated = { ...plan, startDate: dateForm.startDate, endDate: dateForm.endDate };
                   setSaving(true);
                   try {
-                    await import('../../services/travelPlans').then(m => m.updateTravelPlan(id, {
+                    await travelPlanService.updateTravelPlan(id, {
                       title: updated.title,
                       startDate: updated.startDate,
                       endDate: updated.endDate,
                       userId: updated.userId,
                       destinations: updated.destinations || [],
                       dayItinerary: updated.dayItinerary || [],
-                    }));
+                    });
                     setPlan(updated);
                     setEditingDates(false);
                   } catch (err) {
@@ -119,14 +184,18 @@ const ItineraryManager = () => {
           <button 
             className={activeTab === 'ia' ? 'active' : ''} 
             onClick={() => setActiveTab('ia')}>
-            Sugestão da IA
+            Gerar Roteiro
+          </button>
+          <button 
+            className={activeTab === 'iaDestino' ? 'active' : ''} 
+            onClick={() => setActiveTab('iaDestino')}>
+            Descubra Destinos
           </button>
         </div>
       </header>
 
       <div className="planner-content">
         <div className="itinerary-column">
-          {/* Destinations block - must appear above dayItinerary */}
           {loading ? (
             <p>Carregando roteiro...</p>
           ) : (
@@ -134,39 +203,50 @@ const ItineraryManager = () => {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <h4>Destinos</h4>
                 <div>
-                  <button className="btn-secondary" onClick={() => setShowDestForm(s => !s)}>{showDestForm ? 'Cancelar' : 'Adicionar destino'}</button>
+                  <button 
+                    className="btn-secondary" 
+                    onClick={() => {
+                      setEditingDestinationIndex(null);
+                      setDestForm({ country: '', city: '', arrivalDate: '', departureDate: '' });
+                      setShowDestForm(s => !s);
+                    }}
+                  >
+                    {showDestForm ? 'Cancelar' : 'Adicionar destino'}
+                  </button>
                 </div>
               </div>
               {showDestForm && (
                 <div className="dest-form">
-                  <input placeholder="País" value={destForm.country} onChange={(e) => setDestForm(d => ({ ...d, country: e.target.value }))} />
-                  <input placeholder="Cidade" value={destForm.city} onChange={(e) => setDestForm(d => ({ ...d, city: e.target.value }))} />
-                  <input type="date" placeholder="Chegada" value={destForm.arrivalDate} onChange={(e) => setDestForm(d => ({ ...d, arrivalDate: e.target.value }))} />
-                  <input type="date" placeholder="Saída" value={destForm.departureDate} onChange={(e) => setDestForm(d => ({ ...d, departureDate: e.target.value }))} />
+                  <h5>{editingDestinationIndex !== null ? 'Editar Destino' : 'Adicionar Destino'}</h5>
+                  <input 
+                    placeholder="País" 
+                    value={destForm.country} 
+                    onChange={(e) => setDestForm(d => ({ ...d, country: e.target.value }))} 
+                  />
+                  <input 
+                    placeholder="Cidade" 
+                    value={destForm.city} 
+                    onChange={(e) => setDestForm(d => ({ ...d, city: e.target.value }))} 
+                  />
+                  <input 
+                    type="date" 
+                    placeholder="Chegada" 
+                    value={destForm.arrivalDate} 
+                    onChange={(e) => setDestForm(d => ({ ...d, arrivalDate: e.target.value }))} 
+                  />
+                  <input 
+                    type="date" 
+                    placeholder="Saída" 
+                    value={destForm.departureDate} 
+                    onChange={(e) => setDestForm(d => ({ ...d, departureDate: e.target.value }))} 
+                  />
                   <div style={{ display: 'flex', gap: 8 }}>
-                    <button className="btn-create" onClick={async () => {
-                      if (!plan) return;
-                      const newDest = { country: destForm.country, city: destForm.city, arrivalDate: destForm.arrivalDate, departureDate: destForm.departureDate };
-                      const updated = { ...plan, destinations: [...(plan.destinations || []), newDest] };
-                      setSaving(true);
-                      try {
-                        await import('../../services/travelPlans').then(m => m.updateTravelPlan(id, {
-                          title: updated.title,
-                          startDate: updated.startDate,
-                          endDate: updated.endDate,
-                          userId: updated.userId,
-                          destinations: updated.destinations,
-                          dayItinerary: updated.dayItinerary || [],
-                        }));
-                        setPlan(updated);
-                        setDestForm({ country: '', city: '', arrivalDate: '', departureDate: '' });
-                        setShowDestForm(false);
-                      } catch (err) {
-                        console.error('Erro ao adicionar destino:', err);
-                        alert('Erro ao adicionar destino');
-                      } finally { setSaving(false); }
-                    }}>{saving ? 'Adicionando...' : 'Adicionar'}</button>
-                    <button className="btn-secondary" onClick={() => setShowDestForm(false)}>Cancelar</button>
+                    <button className="btn-create" onClick={handleSaveDestination}>
+                      {saving ? 'Salvando...' : (editingDestinationIndex !== null ? 'Salvar' : 'Adicionar')}
+                    </button>
+                    <button className="btn-secondary" onClick={handleCancelEdit}>
+                      Cancelar
+                    </button>
                   </div>
                 </div>
               )}
@@ -177,29 +257,44 @@ const ItineraryManager = () => {
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div>
                           <div className="dest-title">{d.city || ''}{d.country ? `, ${d.country}` : ''}</div>
-                          <div className="dest-dates">{d.arrivalDate ? formatDate(d.arrivalDate) : ''} — {d.departureDate ? formatDate(d.departureDate) : ''}</div>
+                          <div className="dest-dates">
+                            {d.arrivalDate ? formatDate(d.arrivalDate) : ''} — {d.departureDate ? formatDate(d.departureDate) : ''}
+                          </div>
                         </div>
-                        <div>
-                          <button className="btn-icon" title="Remover destino" onClick={async () => {
-                            if (!plan) return;
-                            if (!window.confirm('Remover esse destino?')) return;
-                            const updated = { ...plan, destinations: plan.destinations.filter((_, di) => di !== i) };
-                            setSaving(true);
-                            try {
-                              await import('../../services/travelPlans').then(m => m.updateTravelPlan(id, {
-                                title: updated.title,
-                                startDate: updated.startDate,
-                                endDate: updated.endDate,
-                                userId: updated.userId,
-                                destinations: updated.destinations,
-                                dayItinerary: updated.dayItinerary || [],
-                              }));
-                              setPlan(updated);
-                            } catch (err) {
-                              console.error('Erro ao remover destino:', err);
-                              alert('Erro ao remover destino');
-                            } finally { setSaving(false); }
-                          }}><FaTrash /></button>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                          <button 
+                            className="btn-icon" 
+                            title="Editar destino" 
+                            onClick={() => handleEditDestination(i)}
+                          >
+                            <FaEdit />
+                          </button>
+                          <button 
+                            className="btn-icon" 
+                            title="Remover destino" 
+                            onClick={async () => {
+                              if (!plan) return;
+                              if (!window.confirm('Remover esse destino?')) return;
+                              const updated = { ...plan, destinations: plan.destinations.filter((_, di) => di !== i) };
+                              setSaving(true);
+                              try {
+                                await travelPlanService.updateTravelPlan(id, {
+                                  title: updated.title,
+                                  startDate: updated.startDate,
+                                  endDate: updated.endDate,
+                                  userId: updated.userId,
+                                  destinations: updated.destinations,
+                                  dayItinerary: updated.dayItinerary || [],
+                                });
+                                setPlan(updated);
+                              } catch (err) {
+                                console.error('Erro ao remover destino:', err);
+                                alert('Erro ao remover destino');
+                              } finally { setSaving(false); }
+                            }}
+                          >
+                            <FaTrash />
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -216,14 +311,14 @@ const ItineraryManager = () => {
                     const updated = { ...plan, dayItinerary: [...(plan.dayItinerary || []), newDay] };
                     setSaving(true);
                     try {
-                      await import('../../services/travelPlans').then(m => m.updateTravelPlan(id, {
+                      await travelPlanService.updateTravelPlan(id, {
                         title: updated.title,
                         startDate: updated.startDate,
                         endDate: updated.endDate,
                         userId: updated.userId,
                         destinations: updated.destinations || [],
                         dayItinerary: updated.dayItinerary,
-                      }));
+                      });
                       setPlan(updated);
                     } catch (err) {
                       console.error('Erro ao adicionar dia:', err);
@@ -245,14 +340,14 @@ const ItineraryManager = () => {
                           const updated = { ...plan, dayItinerary: plan.dayItinerary.filter((_, di) => di !== idx) };
                           setSaving(true);
                           try {
-                            await import('../../services/travelPlans').then(m => m.updateTravelPlan(id, {
+                            await travelPlanService.updateTravelPlan(id, {
                               title: updated.title,
                               startDate: updated.startDate,
                               endDate: updated.endDate,
                               userId: updated.userId,
                               destinations: updated.destinations || [],
                               dayItinerary: updated.dayItinerary,
-                            }));
+                            });
                             setPlan(updated);
                           } catch (err) {
                             console.error('Erro ao remover dia:', err);
@@ -272,14 +367,14 @@ const ItineraryManager = () => {
                           updated.dayItinerary = updated.dayItinerary.map((d, di) => di === idx ? ({ ...d, activities: (d.activities || []).filter((_, ai) => ai !== aIdx) }) : d);
                           setSaving(true);
                           try {
-                            await import('../../services/travelPlans').then(m => m.updateTravelPlan(id, {
+                            await travelPlanService.updateTravelPlan(id, {
                               title: updated.title,
                               startDate: updated.startDate,
                               endDate: updated.endDate,
                               userId: updated.userId,
                               destinations: updated.destinations || [],
                               dayItinerary: updated.dayItinerary,
-                            }));
+                            });
                             setPlan(updated);
                           } catch (err) {
                             console.error('Erro ao remover atividade:', err);
@@ -297,14 +392,14 @@ const ItineraryManager = () => {
                           updated.dayItinerary = updated.dayItinerary.map((d, di) => di === idx ? ({ ...d, activities: [...(d.activities || []), newActivityText.trim()] }) : d);
                           setSaving(true);
                           try {
-                            await import('../../services/travelPlans').then(m => m.updateTravelPlan(id, {
+                            await travelPlanService.updateTravelPlan(id, {
                               title: updated.title,
                               startDate: updated.startDate,
                               endDate: updated.endDate,
                               userId: updated.userId,
                               destinations: updated.destinations || [],
                               dayItinerary: updated.dayItinerary,
-                            }));
+                            });
                             setPlan(updated);
                             setNewActivityText('');
                             setAddingActivityFor(null);
@@ -331,7 +426,24 @@ const ItineraryManager = () => {
           {activeTab === 'manual' && (
             <TravelMap />
           )}
-
+          {activeTab === 'iaDestino' && (<SugestaoDestino 
+            plan={plan}
+            onAddDestination={async (newDest) => {
+              const updated = { ...plan, destinations: [...(plan.destinations || []), newDest] };
+              setPlan(updated);
+              
+              await travelPlanService.updateTravelPlan(plan.id, {
+                title: updated.title,
+                startDate: updated.startDate,
+                endDate: updated.endDate,
+                userId: updated.userId,
+                destinations: updated.destinations,
+                dayItinerary: updated.dayItinerary || [],
+              });
+            }}
+            userId={user.id}
+          />)}
+ 
           {activeTab === 'ia' && (
             <div className="suggestion-panel">
               <div className="suggestion-controls-top">

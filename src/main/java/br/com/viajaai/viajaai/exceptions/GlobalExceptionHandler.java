@@ -47,4 +47,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> AIResponseParsingException(AIResponseParsingException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
+
+    @ExceptionHandler(SenhaIncorretaException.class)
+    public ResponseEntity<?> SenhaIncorretaException(SenhaIncorretaException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(CriarUsuarioException.class)
+    public ResponseEntity<?> CriarUsuarioException(CriarUsuarioException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
 }
