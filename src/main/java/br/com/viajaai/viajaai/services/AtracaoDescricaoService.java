@@ -1,7 +1,7 @@
 package br.com.viajaai.viajaai.services;
 
-import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.core.ParameterizedTypeReference;
+import br.com.viajaai.viajaai.llm.LlmAdapter;
 import org.springframework.stereotype.Service;
 
 import br.com.viajaai.viajaai.dto.AtracaoRequestDto;
@@ -16,11 +16,10 @@ import java.util.UUID;
 @Service
 public class AtracaoDescricaoService {
 
-    private final ChatClient chatClient;
+    private final LlmAdapter llmAdapter;
     private final UserPreferencesService userPreferencesService;
-
-    public AtracaoDescricaoService(ChatClient.Builder chatClientBuilder, UserPreferencesService userPreferencesService) {
-        this.chatClient = chatClientBuilder.build();
+    public AtracaoDescricaoService(LlmAdapter llmAdapter, UserPreferencesService userPreferencesService) {
+        this.llmAdapter = llmAdapter;
         this.userPreferencesService = userPreferencesService;
     }
 
@@ -32,10 +31,7 @@ public class AtracaoDescricaoService {
         String prompt = construirPrompt(request.getNome(), request.getCidade(), request.getPais(), preferenciasTexto);
 
         try {
-            return chatClient.prompt()
-                    .user(prompt)
-                    .call()
-                    .entity(new ParameterizedTypeReference<AtracaoResponseDto>() {});
+            return llmAdapter.generateEntity(prompt, new ParameterizedTypeReference<AtracaoResponseDto>() {});
         } catch (Exception e) {
             throw new AIResponseParsingException("Erro ao interpretar resposta do modelo de IA: " + e.getMessage(), e);
         }

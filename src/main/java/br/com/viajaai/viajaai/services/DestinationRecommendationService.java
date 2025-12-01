@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.springframework.ai.chat.client.ChatClient;
+import br.com.viajaai.viajaai.llm.LlmAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference; 
 import org.springframework.stereotype.Service;
@@ -20,13 +20,13 @@ import lombok.Data;
 @Service
 public class DestinationRecommendationService {
 
-    private final DestinationRepository destinationRepository;
-    private final ChatClient chatClient;
+	private final DestinationRepository destinationRepository;
+	private final LlmAdapter llmAdapter;
 
     @Autowired
-    public DestinationRecommendationService(DestinationRepository destinationRepository, ChatClient.Builder chatClientBuilder) {
-        this.destinationRepository = destinationRepository;
-        this.chatClient = chatClientBuilder.build();
+	public DestinationRecommendationService(DestinationRepository destinationRepository, LlmAdapter llmAdapter) {
+		this.destinationRepository = destinationRepository;
+		this.llmAdapter = llmAdapter;
     }
 
 		public List<RecommendedDestinationDto> recommendForUser(UUID userId, RecommendDestinationRequestDto recommendDestinationRequestDto) {
@@ -35,12 +35,9 @@ public class DestinationRecommendationService {
 				String prompt = buildRecommendationPrompt(pastTravels, recommendDestinationRequestDto);
 
 				try {
-						return chatClient.prompt()
-										.user(prompt)
-										.call()
-										.entity(new ParameterizedTypeReference<List<RecommendedDestinationDto>>() {});
+					return llmAdapter.generateEntity(prompt, new ParameterizedTypeReference<List<RecommendedDestinationDto>>() {});
 				} catch (Exception e) {
-						throw new AIResponseParsingException("Erro ao interpretar resposta do modelo de IA: " + e.getMessage(), e);
+					throw new AIResponseParsingException("Erro ao interpretar resposta do modelo de IA: " + e.getMessage(), e);
 				}
 		}
 
