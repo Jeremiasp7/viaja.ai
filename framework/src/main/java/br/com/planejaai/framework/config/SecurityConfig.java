@@ -1,4 +1,4 @@
-package br.com.planejai.framework.config;
+package br.com.planejaai.framework.config;
 
 import java.util.List;
 

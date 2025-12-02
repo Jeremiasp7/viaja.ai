@@ -1,4 +1,4 @@
-package br.com.viajaai.viajaai.llm;
+package br.com.planejaai.framework.llm;
 
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
@@ -29,3 +29,4 @@ public class SpringChatClientAdapter implements LlmAdapter {
                 .entity(typeRef);
     }
 }
+

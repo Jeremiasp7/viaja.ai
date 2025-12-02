@@ -3,7 +3,7 @@ package br.com.viajaai.viajaai.services;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import br.com.viajaai.viajaai.llm.LlmAdapter;
+import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Service;
 
 import br.com.viajaai.viajaai.entities.TravelPlanEntity;
@@ -17,12 +17,12 @@ import br.com.viajaai.viajaai.repositories.UserRepository;
 @Service
 public class SugestaoRoteirosService {
     
-    private final LlmAdapter llmAdapter;
+    private final ChatClient chatClient;
     private final UserRepository userRepository;
     private final TravelPlanRepository travelPlanRepository;
 
-    public SugestaoRoteirosService(LlmAdapter llmAdapter, UserRepository userRepository, TravelPlanRepository travelPlanRepository) {
-        this.llmAdapter = llmAdapter;
+    public SugestaoRoteirosService(ChatClient.Builder chatClientBuilder, UserRepository userRepository, TravelPlanRepository travelPlanRepository) {
+        this.chatClient = chatClientBuilder.build();
         this.userRepository = userRepository;
         this.travelPlanRepository = travelPlanRepository;
     }
@@ -57,7 +57,10 @@ public class SugestaoRoteirosService {
                 
                 """.formatted(textoDePreferencias);
 
-        return llmAdapter.generate(prompt);
+        return chatClient.prompt()
+                .user(prompt)
+                .call()
+                .content();
     }
 
     public String gerarRoteiroTravelPlan(UUID travelPlanId) throws TravelPlanNaoEncontradoException {
@@ -92,6 +95,9 @@ public class SugestaoRoteirosService {
                 %s
                 """.formatted(resumoPlano);
 
-        return llmAdapter.generate(prompt);
+        return chatClient.prompt()
+                .user(prompt)
+                .call()
+                .content();
     }
 }

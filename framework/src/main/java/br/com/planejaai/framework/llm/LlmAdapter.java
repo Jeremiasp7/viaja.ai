@@ -1,4 +1,4 @@
-package br.com.viajaai.viajaai.llm;
+package br.com.planejaai.framework.llm;
 
 import org.springframework.core.ParameterizedTypeReference;
 
