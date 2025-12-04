@@ -29,7 +29,6 @@ export default function Settings() {
   const path = location.pathname || "/";
   const isActive = (p) => path === p || path.startsWith(p + "/");
 
-  // ---- Estados Gerais ----
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
@@ -78,7 +77,6 @@ export default function Settings() {
     fetchPreferences();
   }, [authenticated, userId]);
 
-  // ---- Manipulação de Inputs ----
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((f) => ({ ...f, [name]: value }));
@@ -100,7 +98,6 @@ export default function Settings() {
     }));
   };
 
-  // ---- Atualizar Preferências ----
   const handleSave = async (e) => {
     e.preventDefault();
     if (!userId) return setError("Usuário não autenticado");
@@ -123,7 +120,6 @@ export default function Settings() {
     }
   };
 
-  // ---- Gerar Sugestão ----
   const handleGenerateSuggestion = async () => {
     if (!userId) return setError("Usuário não autenticado");
     setLoading(true);
@@ -140,7 +136,6 @@ export default function Settings() {
     }
   };
 
-  // ---- Alterar Dados da Conta ----
   const handleChangePassword = async () => {
     try {
       await updateUser(userId, {
@@ -157,7 +152,6 @@ export default function Settings() {
     }
   };
 
-  // ---- Excluir Conta ----
   const handleDeleteAccount = async () => {
     try {
       await deleteUser(userId);
@@ -169,7 +163,6 @@ export default function Settings() {
     }
   };
 
-  // ---- Render ----
   return (
     <>
       <div className="settings-page container">
