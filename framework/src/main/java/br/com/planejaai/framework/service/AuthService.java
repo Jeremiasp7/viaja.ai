@@ -3,10 +3,9 @@ package br.com.planejaai.framework.service;
 import br.com.planejaai.framework.dto.LoginRequestDto;
 import br.com.planejaai.framework.dto.LoginResponseDto;
 import br.com.planejaai.framework.repository.UserRepository;
-import lombok.AllArgsConstructor;
-
 import java.time.Duration;
 import java.time.Instant;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
