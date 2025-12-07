@@ -22,7 +22,6 @@
         <dependency>
             <groupId>br.com.planejaai</groupId>
             <artifactId>framework</artifactId>
-            <version>1.0.0</version>
         </dependency>
     </dependencies>
 
