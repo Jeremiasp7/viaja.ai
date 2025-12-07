@@ -11,8 +11,8 @@
 				<relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>viajaai</artifactId>
-    <name>ViajaAI app</name>
+    <artifactId>treinaai</artifactId>
+    <name>TreinaAI app</name>
 
     <properties>
         <java.version>17</java.version>
@@ -33,7 +33,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>br.com.viajaai.ViajaAiApplication</mainClass>
+                    <mainClass>br.com.treina.TreinaAiApplication</mainClass>
                 </configuration>
             </plugin>
         </plugins>

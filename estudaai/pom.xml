@@ -8,15 +8,14 @@
         <groupId>br.com.planejaai</groupId>
         <artifactId>planejaai</artifactId>
         <version>1.0.0</version>
-				<relativePath>../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>viajaai</artifactId>
-    <name>ViajaAI app</name>
+    <artifactId>estudaai</artifactId>
+    <name>EstudaAI app</name>
 
     <properties>
         <java.version>17</java.version>
-        <spring-cloud.version>2025.0.0</spring-cloud.version>
     </properties>
 
     <dependencies>
@@ -25,7 +24,7 @@
             <artifactId>framework</artifactId>
             <version>1.0.0</version>
         </dependency>
-	</dependencies>
+    </dependencies>
 
     <build>
         <plugins>
@@ -33,7 +32,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>br.com.viajaai.ViajaAiApplication</mainClass>
+                    <mainClass>br.com.estudaai.EstudaAiApplication</mainClass>
                 </configuration>
             </plugin>
         </plugins>
