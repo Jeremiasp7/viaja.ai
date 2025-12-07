@@ -8,7 +8,7 @@ import br.com.planejaai.framework.dto.CreateUserDto;
 import br.com.planejaai.framework.dto.UpdateUserDto;
 import br.com.planejaai.framework.entity.UserEntity;
 import br.com.planejaai.framework.exception.UsuarioNaoEncontradoException;
-import br.com.planejaai.framework.service.interfaces.UserService;
+import br.com.planejaai.framework.service.UserService;
 
 
 
