@@ -6,12 +6,12 @@ import lombok.Data;
 @Data
 public class MustVisitPlaceDto {
 
-    @JsonProperty("name")
-    private String name;
+  @JsonProperty("name")
+  private String name;
 
-    @JsonProperty("latitude")
-    private double latitude;
+  @JsonProperty("latitude")
+  private double latitude;
 
-    @JsonProperty("longitude")
-    private double longitude;
+  @JsonProperty("longitude")
+  private double longitude;
 }

@@ -1,17 +1,15 @@
 package br.com.viajaai.viajaai.entities;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.UUID;
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,28 +21,28 @@ import lombok.NoArgsConstructor;
 @Entity(name = "users_preferences")
 @Builder
 public class UsersPreferencesEntity {
-    
-    // *algumas das variáveis abaixo podem ser transformadas em arrays
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+  // *algumas das variáveis abaixo podem ser transformadas em arrays
 
-    // perfil de viagem
-    private String estiloDeViagem;
-    private String preferenciaDeAcomodacao;  
-    private String preferenciaDeClima; 
+  @Id
+  @GeneratedValue(strategy = GenerationType.UUID)
+  private UUID id;
 
-    // orçamento 
-    private String faixaOrcamentaria;
-    private Integer duracaoDaViagem;
+  // perfil de viagem
+  private String estiloDeViagem;
+  private String preferenciaDeAcomodacao;
+  private String preferenciaDeClima;
 
-    // companhia
-    private String companhiaDeViagem;
-    private List<LocalDate> preferenciaDeDatas;
+  // orçamento
+  private String faixaOrcamentaria;
+  private Integer duracaoDaViagem;
 
-    @OneToOne
-    @JoinColumn(name = "user_id")
-    @JsonBackReference // evitando erro de serialização infinita
-    private UserEntity user;
-}   
+  // companhia
+  private String companhiaDeViagem;
+  private List<LocalDate> preferenciaDeDatas;
+
+  @OneToOne
+  @JoinColumn(name = "user_id")
+  @JsonBackReference // evitando erro de serialização infinita
+  private UserEntity user;
+}

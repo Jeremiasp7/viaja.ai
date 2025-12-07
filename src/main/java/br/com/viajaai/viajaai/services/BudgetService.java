@@ -1,98 +1,114 @@
 package br.com.viajaai.viajaai.services;
 
-import java.util.List;
-import java.util.UUID;
-
-import org.springframework.stereotype.Service;
-
 import br.com.viajaai.viajaai.dto.CreateBudgetDto;
 import br.com.viajaai.viajaai.entities.BudgetEntity;
 import br.com.viajaai.viajaai.entities.TravelPlanEntity;
+import br.com.viajaai.viajaai.entities.UserEntity;
 import br.com.viajaai.viajaai.exceptions.OrcamentoJaExisteException;
 import br.com.viajaai.viajaai.exceptions.OrcamentoNaoEncontradoException;
 import br.com.viajaai.viajaai.exceptions.TravelPlanNaoEncontradoException;
 import br.com.viajaai.viajaai.exceptions.UsuarioNaoEncontradoException;
-import br.com.viajaai.viajaai.entities.UserEntity;
 import br.com.viajaai.viajaai.repositories.BudgetRepository;
 import br.com.viajaai.viajaai.repositories.TravelPlanRepository;
 import br.com.viajaai.viajaai.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class BudgetService {
 
-    private final BudgetRepository budgetRepository;
-    private final TravelPlanRepository travelPlanRepository;
-    private final UserRepository userRepository;
-    
-    public BudgetEntity createBudget(CreateBudgetDto dto) {
-        if (budgetRepository.findByTravelPlanId(dto.getTravelPlanId()) != null) {
-            throw new OrcamentoJaExisteException("Já existe um orçamento para este plano de viagem.");
-        }
+  private final BudgetRepository budgetRepository;
+  private final TravelPlanRepository travelPlanRepository;
+  private final UserRepository userRepository;
 
-        TravelPlanEntity travelPlan = travelPlanRepository.findById(dto.getTravelPlanId())
-                .orElseThrow(() -> new TravelPlanNaoEncontradoException(
-                        "Plano de viagem não encontrado com o ID: " + dto.getTravelPlanId()
-                ));
-
-        UserEntity user = userRepository.findById(dto.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado com o ID: " + dto.getTravelPlanId()));
-
-        BudgetEntity budget = BudgetEntity.builder()
-                .totalAmount(dto.getTotalAmount())
-                .currency(dto.getCurrency())
-                .categories(dto.getCategories())
-                .travelPlan(travelPlan)
-                .user(user)
-                .build();
-        
-        return budgetRepository.save(budget);
+  public BudgetEntity createBudget(CreateBudgetDto dto) {
+    if (budgetRepository.findByTravelPlanId(dto.getTravelPlanId()) != null) {
+      throw new OrcamentoJaExisteException("Já existe um orçamento para este plano de viagem.");
     }
 
-    public List<BudgetEntity> getBudgetsByUserId(UUID userId) throws UsuarioNaoEncontradoException {
-        if (!userRepository.existsById(userId)) {
-             throw new UsuarioNaoEncontradoException("Usuário não encontrado com o ID: " + userId);
-        }
+    TravelPlanEntity travelPlan =
+        travelPlanRepository
+            .findById(dto.getTravelPlanId())
+            .orElseThrow(
+                () ->
+                    new TravelPlanNaoEncontradoException(
+                        "Plano de viagem não encontrado com o ID: " + dto.getTravelPlanId()));
 
-        return budgetRepository.findByUserId(userId);
+    UserEntity user =
+        userRepository
+            .findById(dto.getUserId())
+            .orElseThrow(
+                () ->
+                    new IllegalArgumentException(
+                        "Usuário não encontrado com o ID: " + dto.getTravelPlanId()));
+
+    BudgetEntity budget =
+        BudgetEntity.builder()
+            .totalAmount(dto.getTotalAmount())
+            .currency(dto.getCurrency())
+            .categories(dto.getCategories())
+            .travelPlan(travelPlan)
+            .user(user)
+            .build();
+
+    return budgetRepository.save(budget);
+  }
+
+  public List<BudgetEntity> getBudgetsByUserId(UUID userId) throws UsuarioNaoEncontradoException {
+    if (!userRepository.existsById(userId)) {
+      throw new UsuarioNaoEncontradoException("Usuário não encontrado com o ID: " + userId);
     }
 
-    public BudgetEntity getBudgetByTravelPlanId(UUID travelPlanId) {
-        
-        BudgetEntity budget = budgetRepository.findByTravelPlanId(travelPlanId);
-    
-        if (budget == null) {
-            throw new EntityNotFoundException("Orçamento não encontrado para o plano de viagem com o ID: " + travelPlanId);
-        }
+    return budgetRepository.findByUserId(userId);
+  }
 
-        return budget;
-        
-    } 
+  public BudgetEntity getBudgetByTravelPlanId(UUID travelPlanId) {
 
-    public BudgetEntity getBudgetById(UUID budgetId) {
-        return budgetRepository.findById(budgetId)
-                .orElseThrow(() -> new OrcamentoNaoEncontradoException("Orçamento não encontrado com o ID: " + budgetId));
+    BudgetEntity budget = budgetRepository.findByTravelPlanId(travelPlanId);
+
+    if (budget == null) {
+      throw new EntityNotFoundException(
+          "Orçamento não encontrado para o plano de viagem com o ID: " + travelPlanId);
     }
 
-    @Transactional
-    public BudgetEntity updateBudget(UUID budgetId, CreateBudgetDto dto) {
-        BudgetEntity existingBudget = budgetRepository.findById(budgetId)
-                .orElseThrow(() -> new OrcamentoNaoEncontradoException("Orçamento não encontrado com o ID: " + budgetId));
+    return budget;
+  }
 
-        existingBudget.setTotalAmount(dto.getTotalAmount());
-        existingBudget.setCurrency(dto.getCurrency());
-        existingBudget.setCategories(dto.getCategories());
+  public BudgetEntity getBudgetById(UUID budgetId) {
+    return budgetRepository
+        .findById(budgetId)
+        .orElseThrow(
+            () ->
+                new OrcamentoNaoEncontradoException(
+                    "Orçamento não encontrado com o ID: " + budgetId));
+  }
 
-        return budgetRepository.save(existingBudget);
+  @Transactional
+  public BudgetEntity updateBudget(UUID budgetId, CreateBudgetDto dto) {
+    BudgetEntity existingBudget =
+        budgetRepository
+            .findById(budgetId)
+            .orElseThrow(
+                () ->
+                    new OrcamentoNaoEncontradoException(
+                        "Orçamento não encontrado com o ID: " + budgetId));
+
+    existingBudget.setTotalAmount(dto.getTotalAmount());
+    existingBudget.setCurrency(dto.getCurrency());
+    existingBudget.setCategories(dto.getCategories());
+
+    return budgetRepository.save(existingBudget);
+  }
+
+  public void deleteBudget(UUID budgetId) {
+    if (!budgetRepository.existsById(budgetId)) {
+      throw new OrcamentoNaoEncontradoException("Orçamento não encontrado com o ID: " + budgetId);
     }
-
-    public void deleteBudget(UUID budgetId) {
-        if (!budgetRepository.existsById(budgetId)) {
-            throw new OrcamentoNaoEncontradoException("Orçamento não encontrado com o ID: " + budgetId);
-        }
-        budgetRepository.deleteById(budgetId);
-    }
+    budgetRepository.deleteById(budgetId);
+  }
 }

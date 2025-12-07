@@ -1,9 +1,7 @@
 package br.com.viajaai.viajaai.dto;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-
+import java.util.List;
 import lombok.*;
 
 @Data
@@ -11,11 +9,11 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class AtracaoResponseDto {
-    private String nome;
-    private String cidade;
-    private String pais;
-    private String descricao;
+  private String nome;
+  private String cidade;
+  private String pais;
+  private String descricao;
 
-    @JsonProperty("checklist_sugerido")
-    private List<String> checklistSugerido;
+  @JsonProperty("checklist_sugerido")
+  private List<String> checklistSugerido;
 }

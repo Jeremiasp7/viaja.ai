@@ -7,12 +7,12 @@ import lombok.Data;
 @Data
 public class RecommendedDestinationDto {
 
-    @JsonProperty("city")
-    private String city;
+  @JsonProperty("city")
+  private String city;
 
-    @JsonProperty("country")
-    private String country;
+  @JsonProperty("country")
+  private String country;
 
-    @JsonProperty("mustVisitPlaces")
-    private List<MustVisitPlaceDto> mustVisitPlaces;
+  @JsonProperty("mustVisitPlaces")
+  private List<MustVisitPlaceDto> mustVisitPlaces;
 }

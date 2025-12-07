@@ -1,8 +1,8 @@
 package br.com.viajaai.viajaai.entities;
 
 import jakarta.persistence.*;
-import lombok.*;
 import java.util.UUID;
+import lombok.*;
 
 @Entity
 @Table(name = "checklists")
@@ -12,14 +12,14 @@ import java.util.UUID;
 @Builder
 public class ChecklistEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.UUID)
+  private UUID id;
 
-    private String nome;
-    private boolean concluido;
+  private String nome;
+  private boolean concluido;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "travel_plan_id")
-    private TravelPlanEntity travelPlan;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "travel_plan_id")
+  private TravelPlanEntity travelPlan;
 }

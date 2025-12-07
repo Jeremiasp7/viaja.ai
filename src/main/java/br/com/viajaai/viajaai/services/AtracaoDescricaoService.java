@@ -1,64 +1,68 @@
 package br.com.viajaai.viajaai.services;
 
-import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.stereotype.Service;
-
 import br.com.viajaai.viajaai.dto.AtracaoRequestDto;
 import br.com.viajaai.viajaai.dto.AtracaoResponseDto;
 import br.com.viajaai.viajaai.entities.UsersPreferencesEntity;
 import br.com.viajaai.viajaai.exceptions.AIResponseParsingException;
 import br.com.viajaai.viajaai.exceptions.PreferenciasNaoEncontradasException;
 import br.com.viajaai.viajaai.exceptions.UsuarioNaoEncontradoException;
-
 import java.util.UUID;
+import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.stereotype.Service;
 
 @Service
 public class AtracaoDescricaoService {
 
-    private final ChatClient chatClient;
-    private final UserPreferencesService userPreferencesService;
+  private final ChatClient chatClient;
+  private final UserPreferencesService userPreferencesService;
 
-    public AtracaoDescricaoService(ChatClient.Builder chatClientBuilder, UserPreferencesService userPreferencesService) {
-        this.chatClient = chatClientBuilder.build();
-        this.userPreferencesService = userPreferencesService;
+  public AtracaoDescricaoService(
+      ChatClient.Builder chatClientBuilder, UserPreferencesService userPreferencesService) {
+    this.chatClient = chatClientBuilder.build();
+    this.userPreferencesService = userPreferencesService;
+  }
+
+  public AtracaoResponseDto gerarDescricao(AtracaoRequestDto request)
+      throws UsuarioNaoEncontradoException, PreferenciasNaoEncontradasException {
+
+    String preferenciasTexto = construirPreferenciasTexto(request.getUserId());
+
+    String prompt =
+        construirPrompt(
+            request.getNome(), request.getCidade(), request.getPais(), preferenciasTexto);
+
+    try {
+      return chatClient
+          .prompt()
+          .user(prompt)
+          .call()
+          .entity(new ParameterizedTypeReference<AtracaoResponseDto>() {});
+    } catch (Exception e) {
+      throw new AIResponseParsingException(
+          "Erro ao interpretar resposta do modelo de IA: " + e.getMessage(), e);
     }
+  }
 
-    public AtracaoResponseDto gerarDescricao(AtracaoRequestDto request)
-            throws UsuarioNaoEncontradoException, PreferenciasNaoEncontradasException {
+  private String construirPreferenciasTexto(UUID userId) {
+    try {
+      UsersPreferencesEntity preferences =
+          userPreferencesService.buscarPreferenciasDoUsuario(userId);
 
-        String preferenciasTexto = construirPreferenciasTexto(request.getUserId());
+      boolean possuiPreferencias =
+          preferences.getEstiloDeViagem() != null
+              || preferences.getPreferenciaDeAcomodacao() != null
+              || preferences.getPreferenciaDeClima() != null
+              || preferences.getFaixaOrcamentaria() != null
+              || preferences.getDuracaoDaViagem() != null
+              || preferences.getCompanhiaDeViagem() != null
+              || preferences.getPreferenciaDeDatas() != null;
 
-        String prompt = construirPrompt(request.getNome(), request.getCidade(), request.getPais(), preferenciasTexto);
+      if (!possuiPreferencias) {
+        return "Sem preferências específicas fornecidas.";
+      }
 
-        try {
-            return chatClient.prompt()
-                    .user(prompt)
-                    .call()
-                    .entity(new ParameterizedTypeReference<AtracaoResponseDto>() {});
-        } catch (Exception e) {
-            throw new AIResponseParsingException("Erro ao interpretar resposta do modelo de IA: " + e.getMessage(), e);
-        }
-    }
-
-    private String construirPreferenciasTexto(UUID userId) {
-        try {
-            UsersPreferencesEntity preferences = userPreferencesService.buscarPreferenciasDoUsuario(userId);
-
-            boolean possuiPreferencias =
-                    preferences.getEstiloDeViagem() != null ||
-                    preferences.getPreferenciaDeAcomodacao() != null ||
-                    preferences.getPreferenciaDeClima() != null ||
-                    preferences.getFaixaOrcamentaria() != null ||
-                    preferences.getDuracaoDaViagem() != null ||
-                    preferences.getCompanhiaDeViagem() != null ||
-                    preferences.getPreferenciaDeDatas() != null;
-
-            if (!possuiPreferencias) {
-                return "Sem preferências específicas fornecidas.";
-            }
-
-            return """
+      return """
                     Estilo: %s
                     Hospedagem: %s
                     Clima: %s
@@ -66,23 +70,24 @@ public class AtracaoDescricaoService {
                     Duração: %s dias
                     Companhia: %s
                     Datas: %s
-                    """.formatted(
-                    preferences.getEstiloDeViagem(),
-                    preferences.getPreferenciaDeAcomodacao(),
-                    preferences.getPreferenciaDeClima(),
-                    preferences.getFaixaOrcamentaria(),
-                    preferences.getDuracaoDaViagem(),
-                    preferences.getCompanhiaDeViagem(),
-                    preferences.getPreferenciaDeDatas()
-            );
+                    """
+          .formatted(
+              preferences.getEstiloDeViagem(),
+              preferences.getPreferenciaDeAcomodacao(),
+              preferences.getPreferenciaDeClima(),
+              preferences.getFaixaOrcamentaria(),
+              preferences.getDuracaoDaViagem(),
+              preferences.getCompanhiaDeViagem(),
+              preferences.getPreferenciaDeDatas());
 
-        } catch (UsuarioNaoEncontradoException | PreferenciasNaoEncontradasException e) {
-            return "Sem preferências específicas fornecidas.";
-        }
+    } catch (UsuarioNaoEncontradoException | PreferenciasNaoEncontradasException e) {
+      return "Sem preferências específicas fornecidas.";
     }
+  }
 
-    private String construirPrompt(String nome, String cidade, String pais, String preferenciasTexto) {
-        return """
+  private String construirPrompt(
+      String nome, String cidade, String pais, String preferenciasTexto) {
+    return """
                 Gere uma descrição personalizada para o viajante abaixo, sobre a atração informada.
 
                 ATRAÇÃO:
@@ -115,7 +120,7 @@ public class AtracaoDescricaoService {
                         "2025-12-22"
                     ]
                 }
-            
+
                 - O JSON deve ter exatamente este formato:
 
                 {
@@ -125,6 +130,7 @@ public class AtracaoDescricaoService {
                 "descricao": "texto...",
                 "checklist_sugerido": ["item1", "item2", ...]
                 }
-                """.formatted(nome, cidade, pais, preferenciasTexto, nome, cidade, pais);
-    }
+                """
+        .formatted(nome, cidade, pais, preferenciasTexto, nome, cidade, pais);
+  }
 }
