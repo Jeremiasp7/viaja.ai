@@ -3,7 +3,7 @@ package br.com.planejaai.framework.controller;
 import br.com.planejaai.framework.dto.CreateUserDto;
 import br.com.planejaai.framework.dto.LoginRequestDto;
 import br.com.planejaai.framework.dto.LoginResponseDto;
-import br.com.planejaai.framework.entity.UserEntity;
+import br.com.planejaai.framework.entity.BaseUserEntity;
 import br.com.planejaai.framework.service.AuthService;
 import br.com.planejaai.framework.service.BaseUserService;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ public class AuthController {
   }
 
   @PostMapping("/register")
-  public ResponseEntity<UserEntity> register(@RequestBody CreateUserDto createUserDto) {
+  public ResponseEntity<BaseUserEntity> register(@RequestBody CreateUserDto createUserDto) {
     return ResponseEntity.ok(userService.criarUsuario(createUserDto));
   }
 }

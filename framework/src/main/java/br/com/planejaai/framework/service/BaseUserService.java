@@ -3,11 +3,11 @@ package br.com.planejaai.framework.service;
 import br.com.planejaai.framework.dto.CreateUserDto;
 import br.com.planejaai.framework.dto.LoginRequestDto;
 import br.com.planejaai.framework.dto.UpdateUserDto;
-import br.com.planejaai.framework.entity.UserEntity;
+import br.com.planejaai.framework.entity.BaseUserEntity;
 import br.com.planejaai.framework.exception.CriarUsuarioException;
 import br.com.planejaai.framework.exception.SenhaIncorretaException;
 import br.com.planejaai.framework.exception.UsuarioNaoEncontradoException;
-import br.com.planejaai.framework.repository.UserRepository;
+import br.com.planejaai.framework.repository.BaseUserRepository;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -17,13 +17,13 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class BaseUserService {
-  private final UserRepository userRepository;
+  private final BaseUserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
 
-  public UserEntity criarUsuario(CreateUserDto dto) {
+  public BaseUserEntity criarUsuario(CreateUserDto dto) {
     try {
-      UserEntity user =
-          UserEntity.builder()
+      BaseUserEntity user =
+          BaseUserEntity.builder()
               .email(dto.getEmail())
               .nome(dto.getNome())
               .senha(passwordEncoder.encode(dto.getSenha()))
@@ -37,19 +37,19 @@ public class BaseUserService {
     }
   }
 
-  public List<UserEntity> buscarUsuarios() {
+  public List<BaseUserEntity> buscarUsuarios() {
     return userRepository.findAll();
   }
 
-  public UserEntity buscarUsuarioPorId(UUID id) throws UsuarioNaoEncontradoException {
+  public BaseUserEntity buscarUsuarioPorId(UUID id) throws UsuarioNaoEncontradoException {
     return userRepository
         .findById(id)
         .orElseThrow(() -> new UsuarioNaoEncontradoException("Usuário não encontrado"));
   }
 
-  public UserEntity atualizarUsuario(UUID id, UpdateUserDto dto)
+  public BaseUserEntity atualizarUsuario(UUID id, UpdateUserDto dto)
       throws UsuarioNaoEncontradoException {
-    UserEntity user = buscarUsuarioPorId(id);
+    BaseUserEntity user = buscarUsuarioPorId(id);
 
     if (dto.getNome() != null) user.setNome(dto.getNome());
     if (dto.getEmail() != null) user.setEmail(dto.getEmail());
@@ -77,11 +77,11 @@ public class BaseUserService {
   }
 
   public void deletarUsuario(UUID id) throws UsuarioNaoEncontradoException {
-    UserEntity user = buscarUsuarioPorId(id);
+    BaseUserEntity user = buscarUsuarioPorId(id);
     userRepository.delete(user);
   }
 
-  public boolean isLoginCorrect(LoginRequestDto loginRequest, UserEntity user) {
+  public boolean isLoginCorrect(LoginRequestDto loginRequest, BaseUserEntity user) {
     return passwordEncoder.matches(loginRequest.getSenha(), user.getPassword());
   }
 }

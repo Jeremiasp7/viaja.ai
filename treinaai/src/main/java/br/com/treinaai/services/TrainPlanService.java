@@ -2,7 +2,7 @@ package br.com.treinaai.services;
 
 import org.springframework.stereotype.Service;
 
-import br.com.planejaai.framework.repository.UserRepository;
+import br.com.planejaai.framework.repository.BaseUserRepository;
 import br.com.planejaai.framework.service.GenericPlanService;
 import br.com.treinaai.entities.TrainPlanEntity;
 import br.com.treinaai.repositories.TrainPlanRepository;
@@ -10,7 +10,7 @@ import br.com.treinaai.repositories.TrainPlanRepository;
 @Service
 public class TrainPlanService extends GenericPlanService<TrainPlanEntity>{
     
-    public TrainPlanService(TrainPlanRepository repository, UserRepository userRepository) {
+    public TrainPlanService(TrainPlanRepository repository, BaseUserRepository userRepository) {
 		super(repository, userRepository);
 	}
 

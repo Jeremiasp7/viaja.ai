@@ -31,5 +31,5 @@ public abstract class UserPreferencesEntityAbstract {
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id", unique = true)
   @JsonIgnore
-  private UserEntity user;
+  private BaseUserEntity user;
 }

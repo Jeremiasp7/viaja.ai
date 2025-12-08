@@ -2,7 +2,7 @@ package br.com.treinaai.services;
 
 import org.springframework.stereotype.Service;
 
-import br.com.planejaai.framework.repository.UserRepository;
+import br.com.planejaai.framework.repository.BaseUserRepository;
 import br.com.planejaai.framework.service.UserPreferencesService;
 import br.com.treinaai.entities.PreferencesEntity;
 import br.com.treinaai.repositories.PreferencesRepository;
@@ -10,7 +10,7 @@ import br.com.treinaai.repositories.PreferencesRepository;
 @Service
 public class PreferencesService extends UserPreferencesService<PreferencesEntity> {
 
-	public PreferencesService(PreferencesRepository repository, UserRepository userRepository) {
+	public PreferencesService(PreferencesRepository repository, BaseUserRepository userRepository) {
 		super(repository, userRepository);
 	}
 

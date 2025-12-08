@@ -2,7 +2,7 @@ package br.com.planejaai.framework.controller;
 
 import br.com.planejaai.framework.dto.CreateUserDto;
 import br.com.planejaai.framework.dto.UpdateUserDto;
-import br.com.planejaai.framework.entity.UserEntity;
+import br.com.planejaai.framework.entity.BaseUserEntity;
 import br.com.planejaai.framework.exception.UsuarioNaoEncontradoException;
 import br.com.planejaai.framework.service.BaseUserService;
 import java.util.List;
@@ -20,12 +20,12 @@ public abstract class BaseUserController {
   }
 
   @GetMapping("/{id}")
-  public UserEntity buscarPorId(@PathVariable UUID id) throws UsuarioNaoEncontradoException {
+  public BaseUserEntity buscarPorId(@PathVariable UUID id) throws UsuarioNaoEncontradoException {
     return service.buscarUsuarioPorId(id);
   }
 
   @PutMapping("/{id}")
-  public UserEntity atualizar(@PathVariable UUID id, @RequestBody UpdateUserDto dto)
+  public BaseUserEntity atualizar(@PathVariable UUID id, @RequestBody UpdateUserDto dto)
       throws UsuarioNaoEncontradoException {
     return service.atualizarUsuario(id, dto);
   }
@@ -36,12 +36,12 @@ public abstract class BaseUserController {
   }
 
   @GetMapping
-  public List<UserEntity> listAll() {
+  public List<BaseUserEntity> listAll() {
     return service.buscarUsuarios();
   }
 
   @PostMapping
-  public UserEntity create(@RequestBody CreateUserDto user) {
+  public BaseUserEntity create(@RequestBody CreateUserDto user) {
     return service.criarUsuario(user);
   }
 }

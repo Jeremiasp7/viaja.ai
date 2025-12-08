@@ -1,20 +1,20 @@
 package br.com.planejaai.framework.service;
 
-import br.com.planejaai.framework.entity.UserEntity;
+import br.com.planejaai.framework.entity.BaseUserEntity;
 import br.com.planejaai.framework.entity.UserPreferencesEntityAbstract;
 import br.com.planejaai.framework.exception.PreferenciasNaoEncontradasException;
 import br.com.planejaai.framework.repository.UserPreferencesRepository;
-import br.com.planejaai.framework.repository.UserRepository;
+import br.com.planejaai.framework.repository.BaseUserRepository;
 import java.util.UUID;
 import org.springframework.transaction.annotation.Transactional;
 
 public abstract class UserPreferencesService<T extends UserPreferencesEntityAbstract> {
 
   protected final UserPreferencesRepository<T> repository;
-  protected final UserRepository userRepository;
+  protected final BaseUserRepository userRepository;
 
   protected UserPreferencesService(
-      UserPreferencesRepository<T> repository, UserRepository userRepository) {
+      UserPreferencesRepository<T> repository, BaseUserRepository userRepository) {
     this.repository = repository;
     this.userRepository = userRepository;
   }
@@ -30,7 +30,7 @@ public abstract class UserPreferencesService<T extends UserPreferencesEntityAbst
 
   @Transactional
   public T atualizarPreferencias(UUID userId, T incomingData) {
-    UserEntity user =
+    BaseUserEntity user =
         userRepository
             .findById(userId)
             .orElseThrow(

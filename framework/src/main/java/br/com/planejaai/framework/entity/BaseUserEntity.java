@@ -27,7 +27,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @NoArgsConstructor
 @Entity
 @Table(name = "users")
-public class UserEntity implements UserDetails {
+public class BaseUserEntity implements UserDetails {
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
