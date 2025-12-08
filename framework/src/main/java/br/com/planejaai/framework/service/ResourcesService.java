@@ -69,7 +69,7 @@ public abstract class ResourcesService<T extends ResourcesEntityAbstract> {
 
     if (updated.getMainResource() != null) existing.setMainResource(updated.getMainResource());
     if (updated.getResourceType() != null) existing.setResourceType(updated.getResourceType());
-    if (updated.getTravelPlan() != null) existing.setTravelPlan(updated.getTravelPlan());
+    if (updated.getPlan() != null) existing.setPlan(updated.getPlan());
     if (updated.getUser() != null) existing.setUser(updated.getUser());
 
     @SuppressWarnings("unchecked")

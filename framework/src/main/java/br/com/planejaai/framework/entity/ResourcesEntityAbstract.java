@@ -36,7 +36,7 @@ public abstract class ResourcesEntityAbstract { // BudgetEntity - Viajaai
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "travel_plan_id")
   @JsonIgnore
-  private GenericPlanEntityAbstract travelPlan;
+  private GenericPlanEntityAbstract plan;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
