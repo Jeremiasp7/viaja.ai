@@ -6,10 +6,10 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 
-import br.com.planejaai.framework.entity.GenericPlanEntityAbstract;
+import br.com.planejaai.framework.entity.ChecklistEntityAbstract;
 
 @NoRepositoryBean
-public interface GenericPlanRepository<T extends GenericPlanEntityAbstract> extends JpaRepository<T, UUID> {
-
-    List<T> findByUserId(UUID userId);
+public interface ChecklistRepository<T extends ChecklistEntityAbstract> extends JpaRepository<T, UUID> {
+    
+    List<T> findByPlanId(UUID planId);
 }
