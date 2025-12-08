@@ -1,9 +1,6 @@
 package br.com.planejaai.framework.entity;
 
-import java.util.UUID;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -13,6 +10,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,24 +20,23 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name = "resources")
-public abstract class ResourcesEntityAbstract { //BudgetEntity - Viajaai
-    
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+public abstract class ResourcesEntityAbstract { // BudgetEntity - Viajaai
 
-    private Double mainResource; //totalAmount - Viajaai, tempo - Estudaai, tempo de treino - Treinaai
-    private String resourceType; //currency - Viajaai, 
+  @Id
+  @GeneratedValue(strategy = GenerationType.UUID)
+  private UUID id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "travel_plan_id")
-    @JsonIgnore
-    private GenericPlanEntityAbstract travelPlan;
+  private Double
+      mainResource; // totalAmount - Viajaai, tempo - Estudaai, tempo de treino - Treinaai
+  private String resourceType; // currency - Viajaai,
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    @JsonIgnore
-    private UserEntity user;
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "travel_plan_id")
+  @JsonIgnore
+  private GenericPlanEntityAbstract travelPlan;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user_id")
+  @JsonIgnore
+  private UserEntity user;
 }
-
-

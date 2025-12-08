@@ -25,5 +25,18 @@
             <artifactId>framework</artifactId>
             <version>1.0.0</version>
         </dependency>
-		</dependencies>
+	</dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>br.com.viajaai.ViajaAiApplication</mainClass>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>

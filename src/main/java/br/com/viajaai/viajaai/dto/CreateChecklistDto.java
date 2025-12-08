@@ -7,7 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class CreateChecklistDto {
-    private String nome;
-    private boolean concluido;
-    private String travelPlanId;
+  private String nome;
+  private boolean concluido;
+  private String travelPlanId;
 }

@@ -14,71 +14,79 @@ import br.com.planejaai.framework.exception.CriarUsuarioException;
 import br.com.planejaai.framework.exception.SenhaIncorretaException;
 import br.com.planejaai.framework.exception.UsuarioNaoEncontradoException;
 import br.com.planejaai.framework.repository.UserRepository;
+import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    
-    public UserEntity criarUsuario(CreateUserDto dto) {
-        try {
-            UserEntity user = UserEntity.builder()
-                .email(dto.getEmail())
-                .nome(dto.getNome())
-                .senha(passwordEncoder.encode(dto.getSenha()))
-                .build();
+  private final UserRepository userRepository;
+  private final PasswordEncoder passwordEncoder;
 
-            return userRepository.save(user);
+  public UserEntity criarUsuario(CreateUserDto dto) {
+    try {
+      UserEntity user =
+          UserEntity.builder()
+              .email(dto.getEmail())
+              .nome(dto.getNome())
+              .senha(passwordEncoder.encode(dto.getSenha()))
+              .build();
 
-        } catch (Exception e) {
-            throw new CriarUsuarioException("Erro no cadastro do usuário", e);
-        }
+      return userRepository.save(user);
+
+    } catch (Exception e) {
+      throw new CriarUsuarioException("Erro no cadastro do usuário", e);
     }
+  }
 
-    public List<UserEntity> buscarUsuarios() {
-        return userRepository.findAll();
-    }
+  public List<UserEntity> buscarUsuarios() {
+    return userRepository.findAll();
+  }
 
-    public UserEntity buscarUsuarioPorId(UUID id) throws UsuarioNaoEncontradoException {
-    return userRepository.findById(id)
+  public UserEntity buscarUsuarioPorId(UUID id) throws UsuarioNaoEncontradoException {
+    return userRepository
+        .findById(id)
         .orElseThrow(() -> new UsuarioNaoEncontradoException("Usuário não encontrado"));
+  }
+
+  public UserEntity atualizarUsuario(UUID id, UpdateUserDto dto)
+      throws UsuarioNaoEncontradoException {
+    UserEntity user = buscarUsuarioPorId(id);
+
+    if (dto.getNome() != null) user.setNome(dto.getNome());
+    if (dto.getEmail() != null) user.setEmail(dto.getEmail());
+
+    if (dto.getNovaSenha() == null
+        || dto.getSenhaAntiga() == null
+        || dto.getNovaSenha().isEmpty()
+        || dto.getSenhaAntiga().isEmpty()) {
+      throw new SenhaIncorretaException(
+          "Para alterar os dados, é necessário fornecer a senha antiga e a nova senha.");
     }
 
-    public UserEntity atualizarUsuario(UUID id, UpdateUserDto dto) throws UsuarioNaoEncontradoException {
-        UserEntity user = buscarUsuarioPorId(id);
+    if (dto.getSenhaAntiga() != null && dto.getNovaSenha() != null) {
+      boolean senhaCorreta = passwordEncoder.matches(dto.getSenhaAntiga(), user.getSenha());
 
-        if (dto.getNome() != null) user.setNome(dto.getNome());
-        if (dto.getEmail() != null) user.setEmail(dto.getEmail());
+      if (!senhaCorreta) {
+        throw new SenhaIncorretaException("Senha atual incorreta.");
+      }
 
-        if (dto.getNovaSenha() == null || dto.getSenhaAntiga() == null || dto.getNovaSenha().isEmpty() || dto.getSenhaAntiga().isEmpty()) {
-            throw new SenhaIncorretaException("Para alterar os dados, é necessário fornecer a senha antiga e a nova senha.");
-        }
-
-        if (dto.getSenhaAntiga() != null && dto.getNovaSenha() != null) {
-            boolean senhaCorreta = passwordEncoder.matches(dto.getSenhaAntiga(), user.getSenha());
-
-            if (!senhaCorreta) {
-                throw new SenhaIncorretaException("Senha atual incorreta.");
-            }
-
-            String senhaCriptografada = passwordEncoder.encode(dto.getNovaSenha());
-            user.setSenha(senhaCriptografada);
-        }
-
-        return userRepository.save(user);
+      String senhaCriptografada = passwordEncoder.encode(dto.getNovaSenha());
+      user.setSenha(senhaCriptografada);
     }
 
-    public void deletarUsuario(UUID id) throws UsuarioNaoEncontradoException {
-        UserEntity user = buscarUsuarioPorId(id);
-        userRepository.delete(user);
-    }
+    return userRepository.save(user);
+  }
 
-    public boolean isLoginCorrect(LoginRequestDto loginRequest, UserEntity user) {
-        return passwordEncoder.matches(loginRequest.getSenha(), user.getSenha());
-    }
+  public void deletarUsuario(UUID id) throws UsuarioNaoEncontradoException {
+    UserEntity user = buscarUsuarioPorId(id);
+    userRepository.delete(user);
+  }
 
-    
+  public boolean isLoginCorrect(LoginRequestDto loginRequest, UserEntity user) {
+    return passwordEncoder.matches(loginRequest.getSenha(), user.getPassword());
+  }
 }

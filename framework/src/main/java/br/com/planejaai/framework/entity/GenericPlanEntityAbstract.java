@@ -1,8 +1,5 @@
 package br.com.planejaai.framework.entity;
 
-import java.time.LocalDate;
-import java.util.UUID;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -12,6 +9,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
+import java.time.LocalDate;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,28 +20,29 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity(name = "travel_plans")
 public abstract class GenericPlanEntityAbstract {
-    
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
 
-    private String title;
-    private LocalDate startDate;
-    private LocalDate endDate;
+  @Id
+  @GeneratedValue(strategy = GenerationType.UUID)
+  private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private UserEntity user;
+  private String title;
+  private LocalDate startDate;
+  private LocalDate endDate;
 
-    //@OneToMany(mappedBy = "travelPlan", cascade = CascadeType.ALL, orphanRemoval = true, fetch = //FetchType.EAGER)
-    //@JsonManagedReference
-    //private List<DestinationEntity> destinations;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user_id")
+  private UserEntity user;
 
-    //@OneToMany(mappedBy = "travelPlan", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    //@JsonManagedReference
-    //private List<DayItineraryEntity> dayItinerary;
+  // @OneToMany(mappedBy = "travelPlan", cascade = CascadeType.ALL, orphanRemoval = true, fetch =
+  // //FetchType.EAGER)
+  // @JsonManagedReference
+  // private List<DestinationEntity> destinations;
 
-    @OneToOne(mappedBy = "travelPlan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private ResourcesEntityAbstract resources;
+  // @OneToMany(mappedBy = "travelPlan", cascade = CascadeType.ALL, orphanRemoval = true, fetch =
+  // FetchType.EAGER)
+  // @JsonManagedReference
+  // private List<DayItineraryEntity> dayItinerary;
+
+  @OneToOne(mappedBy = "travelPlan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  private ResourcesEntityAbstract resources;
 }
-

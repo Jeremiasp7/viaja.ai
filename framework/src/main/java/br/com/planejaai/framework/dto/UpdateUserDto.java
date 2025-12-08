@@ -10,9 +10,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class UpdateUserDto {
-    
-    private String email;
-    private String nome;
-    private String novaSenha;
-    private String senhaAntiga;
+
+  private String email;
+  private String nome;
+  private String novaSenha;
+  private String senhaAntiga;
 }

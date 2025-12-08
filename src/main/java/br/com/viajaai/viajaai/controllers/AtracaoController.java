@@ -11,15 +11,16 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/atracoes")
 public class AtracaoController {
 
-    private final AtracaoDescricaoService service;
+  private final AtracaoDescricaoService service;
 
-    public AtracaoController(AtracaoDescricaoService service) {
-        this.service = service;
-    }
+  public AtracaoController(AtracaoDescricaoService service) {
+    this.service = service;
+  }
 
-    @PostMapping("/descricao")
-    public ResponseEntity<AtracaoResponseDto> gerarDescricao(@RequestBody AtracaoRequestDto request) throws UsuarioNaoEncontradoException {
-        AtracaoResponseDto response = service.gerarDescricao(request);
-        return ResponseEntity.ok(response);
-    }
+  @PostMapping("/descricao")
+  public ResponseEntity<AtracaoResponseDto> gerarDescricao(@RequestBody AtracaoRequestDto request)
+      throws UsuarioNaoEncontradoException {
+    AtracaoResponseDto response = service.gerarDescricao(request);
+    return ResponseEntity.ok(response);
+  }
 }
