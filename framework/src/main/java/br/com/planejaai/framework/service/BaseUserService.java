@@ -1,11 +1,5 @@
 package br.com.planejaai.framework.service;
 
-import java.util.List;
-import java.util.UUID;
-
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
 import br.com.planejaai.framework.dto.CreateUserDto;
 import br.com.planejaai.framework.dto.LoginRequestDto;
 import br.com.planejaai.framework.dto.UpdateUserDto;
@@ -22,7 +16,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class BaseUserService {
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
 
@@ -38,7 +32,8 @@ public class UserService {
       return userRepository.save(user);
 
     } catch (Exception e) {
-      throw new CriarUsuarioException("Erro no cadastro do usuário", e);
+
+      throw new CriarUsuarioException(dto.toString(), e);
     }
   }
 

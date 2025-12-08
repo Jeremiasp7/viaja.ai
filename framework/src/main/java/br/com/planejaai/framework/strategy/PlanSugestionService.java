@@ -25,11 +25,10 @@ public class PlanSugestionService implements LlmStrategy {
     this.genericPlanRepository = genericPlanRepository;
   }
 
-  public String generatePlanWithPreferences(UUID userId, String prompt) throws Exception { 
-    UserEntity user = userRepository
-      .findById(userId)
-        .orElseThrow(() -> new Exception("Usuário não encontrado"));
-    
+  public String generatePlanWithPreferences(UUID userId, String prompt) throws Exception {
+    UserEntity user =
+        userRepository.findById(userId).orElseThrow(() -> new Exception("Usuário não encontrado"));
+
     UserPreferencesEntityAbstract preferences = user.getPreferences();
     if (preferences == null) {
       throw new Exception("Usuário não possui preferências cadastradas.");
@@ -42,8 +41,9 @@ public class PlanSugestionService implements LlmStrategy {
 
   public String generatePlanWithGenericPlan(UUID genericPlan) throws Exception {
     GenericPlanEntityAbstract plan =
-      genericPlanRepository.findById(genericPlan)
-        .orElseThrow(() -> new Exception("Plano não encontrado"));
+        genericPlanRepository
+            .findById(genericPlan)
+            .orElseThrow(() -> new Exception("Plano não encontrado"));
 
     String resumoPlano =
         """

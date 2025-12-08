@@ -11,15 +11,13 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
-import org.springframework.stereotype.Service;
 
-@Service
 @AllArgsConstructor
-public class AuthService {
+public abstract class AuthService {
 
   private final JwtEncoder jwtEncoder;
   private final UserRepository userRepository;
-  private final UserService userService;
+  private final BaseUserService userService;
 
   public ResponseEntity<LoginResponseDto> login(LoginRequestDto loginRequest) {
     var user = userRepository.findByEmail(loginRequest.getEmail());

@@ -43,7 +43,7 @@ public abstract class ResourcesService<T extends ResourcesEntityAbstract> {
 
   public T findByPlanId(UUID planId) {
     @SuppressWarnings("unchecked")
-    T resource = (T) resourcesRepository.findByGenericPlan(planId);
+    T resource = (T) resourcesRepository.findByGenericPlan_Id(planId);
     if (resource == null) {
       throw new ResourceNotFoundException("Resource not found for plan id: " + planId);
     }
@@ -69,7 +69,7 @@ public abstract class ResourcesService<T extends ResourcesEntityAbstract> {
 
     if (updated.getMainResource() != null) existing.setMainResource(updated.getMainResource());
     if (updated.getResourceType() != null) existing.setResourceType(updated.getResourceType());
-    if (updated.getTravelPlan() != null) existing.setTravelPlan(updated.getTravelPlan());
+    if (updated.getGenericPlan() != null) existing.setGenericPlan(updated.getGenericPlan());
     if (updated.getUser() != null) existing.setUser(updated.getUser());
 
     @SuppressWarnings("unchecked")
