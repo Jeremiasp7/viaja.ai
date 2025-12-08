@@ -1,6 +1,8 @@
 package br.com.planejaai.framework.strategy;
 
 import br.com.planejaai.framework.entity.GenericPlanEntityAbstract;
+import br.com.planejaai.framework.entity.UserEntity;
+import br.com.planejaai.framework.entity.UserPreferencesEntityAbstract;
 import br.com.planejaai.framework.repository.GenericPlanRepository;
 import br.com.planejaai.framework.repository.UserRepository;
 import java.util.UUID;
@@ -10,28 +12,36 @@ import org.springframework.stereotype.Service;
 @Service
 public class PlanSugestionService implements LlmStrategy {
 
-  private final ChatClient chatClient;
-  private final UserRepository userRepository;
-  private final GenericPlanRepository genericPlanRepository;
+  protected final ChatClient chatClient;
+  protected final UserRepository userRepository;
+  protected final GenericPlanRepository<? extends GenericPlanEntityAbstract> genericPlanRepository;
 
   public PlanSugestionService(
       ChatClient.Builder chatClientBuilder,
       UserRepository userRepository,
-      GenericPlanRepository genericPlanRepository) {
+      GenericPlanRepository<? extends GenericPlanEntityAbstract> genericPlanRepository) {
     this.chatClient = chatClientBuilder.build();
     this.userRepository = userRepository;
     this.genericPlanRepository = genericPlanRepository;
   }
 
-  // public String generatePlanWithPreferences(UUID userId) {
-  /** faltam as preferências */
-  // }
+  public String generatePlanWithPreferences(UUID userId, String prompt) throws Exception { 
+    UserEntity user = userRepository
+      .findById(userId)
+        .orElseThrow(() -> new Exception("Usuário não encontrado"));
+    
+    UserPreferencesEntityAbstract preferences = user.getPreferences();
+    if (preferences == null) {
+      throw new Exception("Usuário não possui preferências cadastradas.");
+    }
+
+    return chatClient.prompt().user(prompt).call().content();
+  }
 
   public String generatePlanWithGenericPlan(UUID genericPlan) throws Exception {
     GenericPlanEntityAbstract plan =
-        genericPlanRepository
-            .findById(genericPlan)
-            .orElseThrow(() -> new Exception("Plano de viagem não encontrado"));
+      genericPlanRepository.findById(genericPlan)
+        .orElseThrow(() -> new Exception("Plano não encontrado"));
 
     String resumoPlano =
         """

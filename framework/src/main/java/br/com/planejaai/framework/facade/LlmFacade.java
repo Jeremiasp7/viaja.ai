@@ -16,4 +16,8 @@ public class LlmFacade {
   public String gerarRoteiroComPlano(UUID genericPlanId) throws Exception {
     return planSugestionService.generatePlanWithGenericPlan(genericPlanId);
   }
+
+  public String gerarRoteiroComPreferencias(UUID userId, String prompt) throws Exception {
+    return planSugestionService.generatePlanWithPreferences(userId, prompt);
+  }
 }
