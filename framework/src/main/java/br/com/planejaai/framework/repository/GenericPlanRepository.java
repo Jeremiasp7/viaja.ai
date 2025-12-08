@@ -1,6 +1,6 @@
 package br.com.planejaai.framework.repository;
 
-import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,5 +11,5 @@ import br.com.planejaai.framework.entity.GenericPlanEntityAbstract;
 @NoRepositoryBean
 public interface GenericPlanRepository<T extends GenericPlanEntityAbstract> extends JpaRepository<T, UUID> {
 
-    List<T> findByUserId(UUID userId);
+    Optional<T> findByUserId(UUID userId);
 }

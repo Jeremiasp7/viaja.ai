@@ -35,7 +35,9 @@ public class PlanSugestionService implements LlmStrategy {
       throw new Exception("Usuário não possui preferências cadastradas.");
     }
 
-    return chatClient.prompt().user(prompt).call().content();
+    // build the effective prompt using a protected hook so modules can customize
+    String effectivePrompt = buildPromptForPreferences(user, preferences, prompt);
+    return chatClient.prompt().user(effectivePrompt).call().content();
   }
 
   public String generatePlanWithGenericPlan(UUID genericPlan) throws Exception {
@@ -50,6 +52,30 @@ public class PlanSugestionService implements LlmStrategy {
                 """
             .formatted(plan.getTitle(), plan.getStartDate(), plan.getEndDate());
 
+    String prompt = buildPromptForGenericPlan(plan, resumoPlano);
+    return chatClient.prompt().user(prompt).call().content();
+  }
+
+  @Override
+  public Object execute(String input) {
+    throw new UnsupportedOperationException("Use os métodos específicos");
+  }
+
+  /**
+   * Hook: build a prompt when generating a plan using user preferences.
+   * Subclasses may override to include domain-specific context.
+   */
+  protected String buildPromptForPreferences(
+      UserEntity user, UserPreferencesEntityAbstract preferences, String userPrompt) {
+    // Default behavior: pass through the user prompt but add a short instruction
+    return "Responda em português e de forma direta. " + userPrompt;
+  }
+
+  /**
+   * Hook: build a prompt when generating a plan based on a generic plan entity.
+   * Subclasses may override to adjust tone or include extra context.
+   */
+  protected String buildPromptForGenericPlan(GenericPlanEntityAbstract plan, String resumoPlano) {
     String prompt =
         """
                 Responda em português e de forma direta, sem dar margem para continuar uma conversa.
@@ -58,14 +84,6 @@ public class PlanSugestionService implements LlmStrategy {
                 %s
                 """
             .formatted(resumoPlano);
-
-    // a única coisa que o usuário deverá acrescentar são os detalhes do seu plano
-
-    return chatClient.prompt().user(prompt).call().content();
-  }
-
-  @Override
-  public Object execute(String input) {
-    throw new UnsupportedOperationException("Use os métodos específicos");
+    return prompt;
   }
 }

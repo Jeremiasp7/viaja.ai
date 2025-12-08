@@ -1,0 +1,23 @@
+package br.com.treinaai.entities;
+
+import java.util.List;
+
+import br.com.planejaai.framework.entity.GenericPlanEntityAbstract;
+import jakarta.persistence.Entity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+
+@Data
+@EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Entity
+public class TrainPlanEntity extends GenericPlanEntityAbstract {
+    
+    private List<String> dayActivities;
+
+}
