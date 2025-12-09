@@ -1,10 +1,10 @@
 package br.com.planejaai.framework.strategy;
 
 import br.com.planejaai.framework.entity.GenericPlanEntityAbstract;
-import br.com.planejaai.framework.entity.UserEntity;
+import br.com.planejaai.framework.entity.BaseUserEntity;
 import br.com.planejaai.framework.entity.UserPreferencesEntityAbstract;
 import br.com.planejaai.framework.repository.GenericPlanRepository;
-import br.com.planejaai.framework.repository.UserRepository;
+import br.com.planejaai.framework.repository.BaseUserRepository;
 import java.util.UUID;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Service;
@@ -13,23 +13,22 @@ import org.springframework.stereotype.Service;
 public class PlanSugestionService implements LlmStrategy {
 
   protected final ChatClient chatClient;
-  protected final UserRepository userRepository;
+  protected final BaseUserRepository userRepository;
   protected final GenericPlanRepository<? extends GenericPlanEntityAbstract> genericPlanRepository;
 
   public PlanSugestionService(
       ChatClient.Builder chatClientBuilder,
-      UserRepository userRepository,
+      BaseUserRepository userRepository,
       GenericPlanRepository<? extends GenericPlanEntityAbstract> genericPlanRepository) {
     this.chatClient = chatClientBuilder.build();
     this.userRepository = userRepository;
     this.genericPlanRepository = genericPlanRepository;
   }
 
-  public String generatePlanWithPreferences(UUID userId, String prompt) throws Exception { 
-    UserEntity user = userRepository
-      .findById(userId)
-        .orElseThrow(() -> new Exception("Usuário não encontrado"));
-    
+  public String generatePlanWithPreferences(UUID userId, String prompt) throws Exception {
+    BaseUserEntity user =
+        userRepository.findById(userId).orElseThrow(() -> new Exception("Usuário não encontrado"));
+
     UserPreferencesEntityAbstract preferences = user.getPreferences();
     if (preferences == null) {
       throw new Exception("Usuário não possui preferências cadastradas.");
@@ -42,8 +41,9 @@ public class PlanSugestionService implements LlmStrategy {
 
   public String generatePlanWithGenericPlan(UUID genericPlan) throws Exception {
     GenericPlanEntityAbstract plan =
-      genericPlanRepository.findById(genericPlan)
-        .orElseThrow(() -> new Exception("Plano não encontrado"));
+        genericPlanRepository
+            .findById(genericPlan)
+            .orElseThrow(() -> new Exception("Plano não encontrado"));
 
     String resumoPlano =
         """
@@ -66,7 +66,7 @@ public class PlanSugestionService implements LlmStrategy {
    * Subclasses may override to include domain-specific context.
    */
   protected String buildPromptForPreferences(
-      UserEntity user, UserPreferencesEntityAbstract preferences, String userPrompt) {
+      BaseUserEntity user, UserPreferencesEntityAbstract preferences, String userPrompt) {
     // Default behavior: pass through the user prompt but add a short instruction
     return "Responda em português e de forma direta. " + userPrompt;
   }

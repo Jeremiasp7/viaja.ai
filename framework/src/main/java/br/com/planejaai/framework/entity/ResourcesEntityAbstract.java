@@ -41,5 +41,5 @@ public abstract class ResourcesEntityAbstract { // BudgetEntity - Viajaai
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
   @JsonIgnore
-  private UserEntity user;
+  private BaseUserEntity user;
 }

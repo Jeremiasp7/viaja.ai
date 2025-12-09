@@ -12,7 +12,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
 import java.time.LocalDate;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -37,18 +36,8 @@ public abstract class GenericPlanEntityAbstract {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
-  private UserEntity user;
+  private BaseUserEntity user;
 
-  // @OneToMany(mappedBy = "travelPlan", cascade = CascadeType.ALL, orphanRemoval = true, fetch =
-  // //FetchType.EAGER)
-  // @JsonManagedReference
-  // private List<DestinationEntity> destinations;
-
-  // @OneToMany(mappedBy = "travelPlan", cascade = CascadeType.ALL, orphanRemoval = true, fetch =
-  // FetchType.EAGER)
-  // @JsonManagedReference
-  // private List<DayItineraryEntity> dayItinerary;
-
-  @OneToOne(mappedBy = "travelPlan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  @OneToOne(mappedBy = "genericPlan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private ResourcesEntityAbstract resources;
 }

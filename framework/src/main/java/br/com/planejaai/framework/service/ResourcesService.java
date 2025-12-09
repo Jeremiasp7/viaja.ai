@@ -43,7 +43,7 @@ public abstract class ResourcesService<T extends ResourcesEntityAbstract> {
 
   public T findByPlanId(UUID planId) {
     @SuppressWarnings("unchecked")
-    T resource = (T) resourcesRepository.findByGenericPlan(planId);
+    T resource = (T) resourcesRepository.findByGenericPlan_Id(planId);
     if (resource == null) {
       throw new ResourceNotFoundException("Resource not found for plan id: " + planId);
     }
