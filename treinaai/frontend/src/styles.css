@@ -1,0 +1,4 @@
+body { margin: 0; padding: 0; }
+button { padding: 8px 12px; cursor: pointer; }
+input, textarea { padding: 8px; width: 100%; box-sizing: border-box; margin-bottom: 8px }
+.card { border: 1px solid #ddd; padding: 12px; border-radius: 6px; max-width: 720px }
