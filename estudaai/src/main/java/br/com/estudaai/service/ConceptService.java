@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class ConceptService extends ConceptDescriptionService {
 
-  public ConceptService(ChatClient.Builder builder) {
-    super(builder);
+  public ConceptService(ChatClient chatClient) {
+    super(chatClient);
   }
 
   @Override

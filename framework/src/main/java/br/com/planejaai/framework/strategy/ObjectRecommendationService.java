@@ -5,12 +5,12 @@ import java.util.List;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.core.ParameterizedTypeReference;
 
-public abstract class ObjectRecommendationService<T> implements LlmStrategy {
+public abstract class ObjectRecommendationService<T> implements LlmStrategy<java.util.List<T>> {
 
   protected final ChatClient chatClient;
 
-  protected ObjectRecommendationService(ChatClient.Builder chatClientBuilder) {
-    this.chatClient = chatClientBuilder.build();
+  protected ObjectRecommendationService(ChatClient chatClient) {
+    this.chatClient = chatClient;
   }
 
   protected List<T> executeRecommendation(
@@ -24,7 +24,7 @@ public abstract class ObjectRecommendationService<T> implements LlmStrategy {
   }
 
   @Override
-  public Object execute(String input) {
-    throw new UnsupportedOperationException("Utilize os métodos espcecificos.");
+  public java.util.List<T> execute(String input) {
+    return executeRecommendation(input, new ParameterizedTypeReference<List<T>>() {});
   }
 }

@@ -8,7 +8,7 @@ import org.springframework.ai.chat.client.ChatClient;
 public class PlanSuggestionService extends PlanSugestionService {
 
   public PlanSuggestionService(
-      ChatClient.Builder chatClient,
+      ChatClient chatClient,
       UserRepository userRepository,
       StudyPlanRepository studyPlanRepository) {
     super(chatClient, userRepository, studyPlanRepository);
