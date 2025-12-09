@@ -3,8 +3,8 @@ package br.com.planejaai.framework.service;
 import br.com.planejaai.framework.entity.BaseUserEntity;
 import br.com.planejaai.framework.entity.UserPreferencesEntityAbstract;
 import br.com.planejaai.framework.exception.PreferenciasNaoEncontradasException;
-import br.com.planejaai.framework.repository.UserPreferencesRepository;
 import br.com.planejaai.framework.repository.BaseUserRepository;
+import br.com.planejaai.framework.repository.UserPreferencesRepository;
 import java.util.UUID;
 import org.springframework.transaction.annotation.Transactional;
 

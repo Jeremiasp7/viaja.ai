@@ -1,10 +1,10 @@
 package br.com.planejaai.framework.strategy;
 
-import br.com.planejaai.framework.entity.GenericPlanEntityAbstract;
 import br.com.planejaai.framework.entity.BaseUserEntity;
+import br.com.planejaai.framework.entity.GenericPlanEntityAbstract;
 import br.com.planejaai.framework.entity.UserPreferencesEntityAbstract;
-import br.com.planejaai.framework.repository.GenericPlanRepository;
 import br.com.planejaai.framework.repository.BaseUserRepository;
+import br.com.planejaai.framework.repository.GenericPlanRepository;
 import java.util.UUID;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Service;
@@ -62,8 +62,8 @@ public class PlanSugestionService implements LlmStrategy {
   }
 
   /**
-   * Hook: build a prompt when generating a plan using user preferences.
-   * Subclasses may override to include domain-specific context.
+   * Hook: build a prompt when generating a plan using user preferences. Subclasses may override to
+   * include domain-specific context.
    */
   protected String buildPromptForPreferences(
       BaseUserEntity user, UserPreferencesEntityAbstract preferences, String userPrompt) {
@@ -72,8 +72,8 @@ public class PlanSugestionService implements LlmStrategy {
   }
 
   /**
-   * Hook: build a prompt when generating a plan based on a generic plan entity.
-   * Subclasses may override to adjust tone or include extra context.
+   * Hook: build a prompt when generating a plan based on a generic plan entity. Subclasses may
+   * override to adjust tone or include extra context.
    */
   protected String buildPromptForGenericPlan(GenericPlanEntityAbstract plan, String resumoPlano) {
     String prompt =

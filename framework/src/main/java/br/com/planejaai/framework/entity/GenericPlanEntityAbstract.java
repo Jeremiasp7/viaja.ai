@@ -38,6 +38,6 @@ public abstract class GenericPlanEntityAbstract {
   @JoinColumn(name = "user_id")
   private BaseUserEntity user;
 
-  @OneToOne(mappedBy = "genericPlan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  @OneToOne(mappedBy = "plan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private ResourcesEntityAbstract resources;
 }

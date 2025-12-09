@@ -1,9 +1,8 @@
 package br.com.estudaai.repository;
 
+import br.com.planejaai.framework.repository.BaseUserRepository;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
-
-import br.com.planejaai.framework.repository.BaseUserRepository;
 
 @Repository
 @Primary

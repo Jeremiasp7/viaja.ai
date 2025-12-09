@@ -16,7 +16,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class TrainChecklistEntity extends ChecklistEntityAbstract {
 
-    // TreinaAI-specific fields
-    private String notes;
-
+  // TreinaAI-specific fields
+  private String notes;
 }

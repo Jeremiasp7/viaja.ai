@@ -1,10 +1,7 @@
 package br.com.treinaai.repositories;
 
+import br.com.planejaai.framework.repository.ResourcesRepository;
 import org.springframework.stereotype.Repository;
 
-import br.com.planejaai.framework.repository.ResourcesRepository;
-
 @Repository
-public interface TrainResourcesRepository extends ResourcesRepository {
-
-}
+public interface TrainResourcesRepository extends ResourcesRepository {}

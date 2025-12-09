@@ -16,6 +16,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class TrainResourcesEntity extends ResourcesEntityAbstract {
 
-    private String thoughts;
-
+  private String thoughts;
 }
