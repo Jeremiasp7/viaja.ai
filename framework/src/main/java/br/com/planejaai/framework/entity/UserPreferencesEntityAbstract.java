@@ -3,6 +3,7 @@ package br.com.planejaai.framework.entity;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.experimental.SuperBuilder;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -21,8 +22,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@SuperBuilder // <--- Substitui o Builder padrão para permitir herança
 @Entity
-
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Table(name = "user_preferences_base")
 public abstract class UserPreferencesEntityAbstract {

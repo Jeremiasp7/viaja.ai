@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>br.com.planejaai</groupId>
-        <artifactId>planejaai</artifactId>
+        <groupId>br.com.viajaai</groupId>
+        <artifactId>viajaai</artifactId>
         <version>1.0.0</version>
 				<relativePath>../pom.xml</relativePath>
     </parent>
@@ -21,7 +21,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>br.com.planejaai</groupId>
+            <groupId>br.com.viajaai</groupId>
             <artifactId>framework</artifactId>
             <version>1.0.0</version>
         </dependency>

@@ -49,6 +49,6 @@ public abstract class GenericPlanEntityAbstract {
   // @JsonManagedReference
   // private List<DayItineraryEntity> dayItinerary;
 
-  @OneToOne(mappedBy = "travelPlan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  @OneToOne(mappedBy = "plan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private ResourcesEntityAbstract resources;
 }

@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ResourcesRepository extends JpaRepository<ResourcesEntityAbstract, UUID> {
 
-  ResourcesEntityAbstract findByGenericPlan(UUID genericPlan);
+  ResourcesEntityAbstract findByPlanId(UUID planId);
 
   List<ResourcesEntityAbstract> findByUserId(UUID userId);
 }
