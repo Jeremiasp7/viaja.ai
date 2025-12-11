@@ -46,14 +46,9 @@ public class PlanSugestionService implements LlmStrategy<String> {
             .findById(genericPlan)
             .orElseThrow(() -> new ResourceNotFoundException("Plano não encontrado"));
 
-    String resumoPlano =
-        """
-          O usuário possui um plano intitulado "%s".
-          Ele planeja cumpri-lo de %s até %s.
-        """
-      .formatted(plan.getTitle(), plan.getStartDate(), plan.getEndDate());
-
-    String prompt = buildPromptForGenericPlan(plan, resumoPlano);
+    String resumoPlano = buildPlanResume(plan);
+    String additionalDetails = getAdditionalPlanDetails(plan);
+    String prompt = buildPromptForGenericPlan(plan, resumoPlano, additionalDetails);
     return chatClient.prompt().user(prompt).call().content();
   }
 
@@ -94,15 +89,28 @@ public class PlanSugestionService implements LlmStrategy<String> {
     return sb.toString();
   }
 
-  protected String buildPromptForGenericPlan(GenericPlanEntityAbstract plan, String resumoPlano) {
+  protected String buildPlanResume(GenericPlanEntityAbstract plan) {
+    return """
+          O usuário possui um plano intitulado "%s".
+          Ele planeja cumpri-lo de %s até %s.
+        """
+      .formatted(plan.getTitle(), plan.getStartDate(), plan.getEndDate());
+  }
+
+  protected String getAdditionalPlanDetails(GenericPlanEntityAbstract plan) {
+    return "";
+  }
+
+  protected String buildPromptForGenericPlan(GenericPlanEntityAbstract plan, String resumoPlano, String additionalDetails) {
+    String additionalSection = additionalDetails.isBlank() ? "" : "\nDetalhes adicionais:\n" + additionalDetails;
     String prompt =
         """
                 Responda em português e de forma direta, sem dar margem para continuar uma conversa.
                 Haja como um especialista no assunto do conteúdo do roteiro e monte um roteiro detalhado
                 com sugestões de atividades e demais coisas condizentes com o plano do usuário. Abaixo, terá o título e as datas do plano, além dos detalhes do plano do usuário.
-                %s
+                %s%s
                 """
-            .formatted(resumoPlano);
+            .formatted(resumoPlano, additionalSection);
     return prompt;
   }
 }

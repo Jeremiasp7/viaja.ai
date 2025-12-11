@@ -1,4 +1,4 @@
-package br.com.treinaai.repository;
+package br.com.treinaai.repositories;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
