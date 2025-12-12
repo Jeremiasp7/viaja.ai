@@ -23,6 +23,7 @@ public abstract class AuthService {
   public ResponseEntity<LoginResponseDto> login(LoginRequestDto loginRequest) {
     var user = userRepository.findByEmail(loginRequest.getEmail());
 
+    System.out.println("User is " + user);
     if (user.isEmpty() || !userService.isLoginCorrect(loginRequest, user.get())) {
       throw new BadCredentialsException("user or password is invalid!");
     }

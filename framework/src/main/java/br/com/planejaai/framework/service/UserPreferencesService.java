@@ -14,7 +14,8 @@ public abstract class UserPreferencesService<T extends UserPreferencesEntityAbst
   protected final BaseUserRepository<? extends BaseUserEntity> userRepository;
 
   protected UserPreferencesService(
-      UserPreferencesRepository<T> repository, BaseUserRepository<? extends BaseUserEntity> userRepository) {
+      UserPreferencesRepository<T> repository,
+      BaseUserRepository<? extends BaseUserEntity> userRepository) {
     this.repository = repository;
     this.userRepository = userRepository;
   }

@@ -17,8 +17,8 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class BaseUserService<T extends BaseUserEntity> {
-  private final BaseUserRepository<T> userRepository;
-  private final PasswordEncoder passwordEncoder;
+  protected final BaseUserRepository<T> userRepository;
+  protected final PasswordEncoder passwordEncoder;
 
   public T criarUsuario(CreateUserDto dto) {
     try {
@@ -47,8 +47,7 @@ public class BaseUserService<T extends BaseUserEntity> {
         .orElseThrow(() -> new UsuarioNaoEncontradoException("Usuário não encontrado"));
   }
 
-  public T atualizarUsuario(UUID id, UpdateUserDto dto)
-      throws UsuarioNaoEncontradoException {
+  public T atualizarUsuario(UUID id, UpdateUserDto dto) throws UsuarioNaoEncontradoException {
     T user = buscarUsuarioPorId(id);
 
     if (dto.getNome() != null) user.setNome(dto.getNome());

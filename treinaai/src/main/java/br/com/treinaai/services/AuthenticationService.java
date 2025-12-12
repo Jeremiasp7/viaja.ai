@@ -1,9 +1,8 @@
 package br.com.treinaai.services;
 
-import org.springframework.stereotype.Service;
-
 import br.com.planejaai.framework.service.AuthService;
 import br.com.treinaai.repositories.UserRepository;
+import org.springframework.stereotype.Service;
 
 @Service
 public class AuthenticationService extends AuthService {
