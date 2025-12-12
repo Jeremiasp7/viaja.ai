@@ -13,12 +13,12 @@ import org.springframework.ai.chat.client.ChatClient;
 public abstract class PlanSugestionService implements LlmStrategy<String> {
 
   protected final ChatClient chatClient;
-  protected final BaseUserRepository userRepository;
+  protected final BaseUserRepository<? extends BaseUserEntity> userRepository;
   protected final GenericPlanRepository<? extends GenericPlanEntityAbstract> genericPlanRepository;
 
   protected PlanSugestionService(
       ChatClient chatClient,
-      BaseUserRepository userRepository,
+      BaseUserRepository<? extends BaseUserEntity> userRepository,
       GenericPlanRepository<? extends GenericPlanEntityAbstract> genericPlanRepository) {
     this.chatClient = chatClient;
     this.userRepository = userRepository;

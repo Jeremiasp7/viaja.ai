@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 
 @NoRepositoryBean
-public interface BaseUserRepository extends JpaRepository<BaseUserEntity, UUID> {
-  Optional<BaseUserEntity> findByEmail(String email);
+public interface BaseUserRepository<T extends BaseUserEntity> extends JpaRepository<T, UUID> {
+  Optional<T> findByEmail(String email);
 }

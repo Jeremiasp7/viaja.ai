@@ -11,10 +11,10 @@ import org.springframework.transaction.annotation.Transactional;
 public abstract class UserPreferencesService<T extends UserPreferencesEntityAbstract> {
 
   protected final UserPreferencesRepository<T> repository;
-  protected final BaseUserRepository userRepository;
+  protected final BaseUserRepository<? extends BaseUserEntity> userRepository;
 
   protected UserPreferencesService(
-      UserPreferencesRepository<T> repository, BaseUserRepository userRepository) {
+      UserPreferencesRepository<T> repository, BaseUserRepository<? extends BaseUserEntity> userRepository) {
     this.repository = repository;
     this.userRepository = userRepository;
   }
