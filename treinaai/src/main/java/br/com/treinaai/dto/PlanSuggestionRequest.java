@@ -1,22 +1,30 @@
 package br.com.treinaai.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import java.util.UUID;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class PlanSuggestionRequest {
-    private UUID userId;
-    private Integer days = 7;
-    private String context;
-    private UUID genericPlanId;
-    private String prompt;
+  @NotNull(message = "ID do usuário é obrigatório")
+  private UUID userId;
 
-    public UUID getUserId() { return userId; }
-    public void setUserId(UUID userId) { this.userId = userId; }
-    public Integer getDays() { return days; }
-    public void setDays(Integer days) { this.days = days; }
-    public String getContext() { return context; }
-    public void setContext(String context) { this.context = context; }
-    public UUID getGenericPlanId() { return genericPlanId; }
-    public void setGenericPlanId(UUID genericPlanId) { this.genericPlanId = genericPlanId; }
-    public String getPrompt() { return prompt; }
-    public void setPrompt(String prompt) { this.prompt = prompt; }
+  @Positive(message = "Número de dias deve ser maior que 0")
+  @Builder.Default
+  private Integer days = 7;
+
+  private String context;
+
+  private UUID genericPlanId;
+
+  @NotBlank(message = "Prompt não pode estar vazio")
+  private String prompt;
 }

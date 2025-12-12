@@ -32,29 +32,20 @@ public abstract class GenericPlanService<T extends GenericPlanEntityAbstract> {
                     new PreferenciasNaoEncontradasException(
                         "Usuario não encontrado com o id: " + userId));
 
-    T existing = repository.findByUserId(userId).orElse(null);
-
-    if (existing == null) {
-      incomingData.setUser(user);
-      return repository.save(incomingData);
-    } else {
-      updateProperties(existing, incomingData);
-
-      existing.setUser(user);
-
-      return repository.save(existing);
-    }
+    // Suporta múltiplos planos por usuário: sempre cria/atualiza o incomingData
+    incomingData.setUser(user);
+    return repository.save(incomingData);
   }
 
   protected abstract void updateProperties(T target, T source);
 
-  public List<GenericPlanEntityAbstract> listarPlanos(UUID userId)
+  public List<T> listarPlanos(UUID userId)
       throws UsuarioNaoEncontradoException {
     if (!userRepository.existsById(userId)) {
       throw new UsuarioNaoEncontradoException("Usuário não encontrado com o ID: " + userId);
     }
 
-    return repository.findByUserId(userId).stream().collect(Collectors.toList());
+    return repository.findByUserId(userId);
   }
 
   public void deleteTravelPlan(UUID id) throws Exception {

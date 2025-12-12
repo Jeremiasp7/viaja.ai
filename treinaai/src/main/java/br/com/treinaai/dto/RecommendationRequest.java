@@ -1,16 +1,24 @@
 package br.com.treinaai.dto;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import java.util.UUID;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class RecommendationRequest {
-    private UUID planId;
-    private String context;
-    private Integer count = 5;
+  @NotNull(message = "ID do plano é obrigatório")
+  private UUID planId;
 
-    public UUID getPlanId() { return planId; }
-    public void setPlanId(UUID planId) { this.planId = planId; }
-    public String getContext() { return context; }
-    public void setContext(String context) { this.context = context; }
-    public Integer getCount() { return count; }
-    public void setCount(Integer count) { this.count = count; }
+  private String context;
+
+  @Positive(message = "Contagem deve ser maior que 0")
+  @Builder.Default
+  private Integer count = 5;
 }

@@ -9,16 +9,14 @@ import br.com.planejaai.framework.repository.BaseUserRepository;
 import br.com.planejaai.framework.repository.GenericPlanRepository;
 import java.util.UUID;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.stereotype.Service;
 
-@Service
-public class PlanSugestionService implements LlmStrategy<String> {
+public abstract class PlanSugestionService implements LlmStrategy<String> {
 
   protected final ChatClient chatClient;
   protected final BaseUserRepository userRepository;
   protected final GenericPlanRepository<? extends GenericPlanEntityAbstract> genericPlanRepository;
 
-  public PlanSugestionService(
+  protected PlanSugestionService(
       ChatClient chatClient,
       BaseUserRepository userRepository,
       GenericPlanRepository<? extends GenericPlanEntityAbstract> genericPlanRepository) {

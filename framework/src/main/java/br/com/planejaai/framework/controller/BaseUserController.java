@@ -5,6 +5,7 @@ import br.com.planejaai.framework.dto.UpdateUserDto;
 import br.com.planejaai.framework.entity.BaseUserEntity;
 import br.com.planejaai.framework.exception.UsuarioNaoEncontradoException;
 import br.com.planejaai.framework.service.BaseUserService;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.stereotype.Controller;
@@ -25,7 +26,7 @@ public abstract class BaseUserController {
   }
 
   @PutMapping("/{id}")
-  public BaseUserEntity atualizar(@PathVariable UUID id, @RequestBody UpdateUserDto dto)
+  public BaseUserEntity atualizar(@PathVariable UUID id, @Valid @RequestBody UpdateUserDto dto)
       throws UsuarioNaoEncontradoException {
     return service.atualizarUsuario(id, dto);
   }
@@ -41,7 +42,7 @@ public abstract class BaseUserController {
   }
 
   @PostMapping
-  public BaseUserEntity create(@RequestBody CreateUserDto user) {
+  public BaseUserEntity create(@Valid @RequestBody CreateUserDto user) {
     return service.criarUsuario(user);
   }
 }
