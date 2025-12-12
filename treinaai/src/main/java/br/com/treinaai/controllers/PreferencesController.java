@@ -3,6 +3,7 @@ package br.com.treinaai.controllers;
 import br.com.planejaai.framework.controller.UserPreferencesController;
 import br.com.treinaai.entities.PreferencesEntity;
 import br.com.treinaai.services.PreferencesService;
+import jakarta.validation.Valid;
 import java.util.UUID;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,13 +25,13 @@ public class PreferencesController extends UserPreferencesController<Preferences
 
   @Override
   public PreferencesEntity update(
-      @PathVariable UUID userId, @RequestBody PreferencesEntity preferences) {
+      @PathVariable UUID userId, @Valid @RequestBody PreferencesEntity preferences) {
     return service.atualizarPreferencias(userId, preferences);
   }
 
   @Override
   public PreferencesEntity create(
-      @PathVariable UUID userId, @RequestBody PreferencesEntity preferences) {
+      @PathVariable UUID userId, @Valid @RequestBody PreferencesEntity preferences) {
     return service.atualizarPreferencias(userId, preferences);
   }
 }

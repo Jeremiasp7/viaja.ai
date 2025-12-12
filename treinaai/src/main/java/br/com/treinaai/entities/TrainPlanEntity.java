@@ -13,9 +13,11 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Entity
 public class TrainPlanEntity extends GenericPlanEntityAbstract {
 
+  private String descricao;
+  private Integer diasTreino;
+  private Integer duracao;
   private List<String> dayActivities;
 }

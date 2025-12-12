@@ -1,12 +1,15 @@
 package br.com.treinaai.dto;
 
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class RecommendationResponse {
-    private List<String> suggestions;
-
-    public RecommendationResponse() {}
-    public RecommendationResponse(List<String> suggestions) { this.suggestions = suggestions; }
-    public List<String> getSuggestions() { return suggestions; }
-    public void setSuggestions(List<String> suggestions) { this.suggestions = suggestions; }
+  private List<String> suggestions;
 }

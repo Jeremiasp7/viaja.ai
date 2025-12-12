@@ -5,19 +5,19 @@ import br.com.planejaai.framework.dto.LoginResponseDto;
 import br.com.planejaai.framework.repository.BaseUserRepository;
 import java.time.Duration;
 import java.time.Instant;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 public abstract class AuthService {
 
-  private final JwtEncoder jwtEncoder;
-  private final BaseUserRepository userRepository;
-  private final BaseUserService userService;
+  protected final JwtEncoder jwtEncoder;
+  protected final BaseUserRepository userRepository;
+  protected final BaseUserService userService;
 
   public ResponseEntity<LoginResponseDto> login(LoginRequestDto loginRequest) {
     var user = userRepository.findByEmail(loginRequest.getEmail());
@@ -31,7 +31,7 @@ public abstract class AuthService {
     var now = Instant.now();
     var claims =
         JwtClaimsSet.builder()
-            .issuer("viajaai")
+            .issuer("planejaai")
             .subject(user.get().getId().toString())
             .issuedAt(now)
             .expiresAt(now.plusSeconds(expiresIn))
