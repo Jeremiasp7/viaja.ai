@@ -35,3 +35,6 @@ build/
 ### ENV ###
 .env
 application.env
+
+### NODE MODULES ###
+node_modules

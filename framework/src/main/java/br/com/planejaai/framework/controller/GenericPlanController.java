@@ -33,7 +33,7 @@ public abstract class GenericPlanController<T extends GenericPlanEntityAbstract>
   }
 
   @GetMapping("/{userId}")
-  public List<GenericPlanEntityAbstract> list(@PathVariable UUID userId)
+  public List<? extends GenericPlanEntityAbstract> list(@PathVariable("userId") UUID userId)
       throws UsuarioNaoEncontradoException {
     return service.listarPlanos(userId);
   }
