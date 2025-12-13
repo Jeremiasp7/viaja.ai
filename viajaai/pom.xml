@@ -8,7 +8,7 @@
         <groupId>br.com.planejaai</groupId>
         <artifactId>planejaai</artifactId>
         <version>1.0.0</version>
-				<relativePath>../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>viajaai</artifactId>
@@ -26,11 +26,17 @@
             <version>1.0.0</version>
         </dependency>
         <dependency>
-    		<groupId>me.paulschwarz</groupId>
-    		<artifactId>spring-dotenv</artifactId>
-    		<version>4.0.0</version>
-		</dependency>
-	</dependencies>
+            <groupId>me.paulschwarz</groupId>
+            <artifactId>spring-dotenv</artifactId>
+            <version>4.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.30</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>
@@ -39,6 +45,16 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <mainClass>br.com.viajaai.ViajaAiApplication</mainClass>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <parameters>true</parameters>
                 </configuration>
             </plugin>
         </plugins>
