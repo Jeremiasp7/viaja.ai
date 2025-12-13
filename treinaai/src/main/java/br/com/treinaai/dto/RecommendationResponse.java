@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class RecommendationResponse {
-  private List<String> suggestions;
+    private List<String> suggestions;
 }

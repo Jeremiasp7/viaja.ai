@@ -22,7 +22,7 @@ public abstract class GenericPlanController<T extends GenericPlanEntityAbstract>
     this.service = service;
   }
 
-  @PostMapping("/create/{userId}")
+  @PostMapping("/{userId}")
   public T create(@PathVariable UUID userId, @RequestBody T plan) {
     return service.atualizarPlano(userId, plan);
   }
@@ -32,11 +32,12 @@ public abstract class GenericPlanController<T extends GenericPlanEntityAbstract>
     return service.atualizarPlano(userId, plan);
   }
 
+
+
   @GetMapping("/{userId}")
-  public List<? extends GenericPlanEntityAbstract> list(@PathVariable("userId") UUID userId)
-      throws UsuarioNaoEncontradoException {
-    return service.listarPlanos(userId);
-  }
+public List<? extends GenericPlanEntityAbstract> list(@PathVariable("userId") UUID userId) throws UsuarioNaoEncontradoException {
+  return service.listarPlanos(userId);
+}
 
   @DeleteMapping("/{planId}")
   public void delete(@PathVariable UUID planId) throws Exception {

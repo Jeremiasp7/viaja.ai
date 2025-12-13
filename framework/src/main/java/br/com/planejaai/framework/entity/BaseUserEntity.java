@@ -43,7 +43,7 @@ public class BaseUserEntity implements UserDetails {
   // @Enumerated(EnumType.STRING)
   // private Role role;
 
-  @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   @JsonManagedReference
   private UserPreferencesEntityAbstract preferences;
 
