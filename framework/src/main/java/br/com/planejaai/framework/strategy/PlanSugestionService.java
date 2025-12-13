@@ -13,12 +13,12 @@ import org.springframework.ai.chat.client.ChatClient;
 public abstract class PlanSugestionService implements LlmStrategy<String> {
 
   protected final ChatClient chatClient;
-  protected final BaseUserRepository userRepository;
+  protected final BaseUserRepository<? extends BaseUserEntity> userRepository;
   protected final GenericPlanRepository<? extends GenericPlanEntityAbstract> genericPlanRepository;
 
   protected PlanSugestionService(
       ChatClient chatClient,
-      BaseUserRepository userRepository,
+      BaseUserRepository<? extends BaseUserEntity> userRepository,
       GenericPlanRepository<? extends GenericPlanEntityAbstract> genericPlanRepository) {
     this.chatClient = chatClient;
     this.userRepository = userRepository;
@@ -27,7 +27,9 @@ public abstract class PlanSugestionService implements LlmStrategy<String> {
 
   public String generatePlanWithPreferences(UUID userId, String prompt) {
     BaseUserEntity user =
-        userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
+        userRepository
+            .findById(userId)
+            .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
 
     UserPreferencesEntityAbstract preferences = user.getPreferences();
     if (preferences == null) {
@@ -82,7 +84,7 @@ public abstract class PlanSugestionService implements LlmStrategy<String> {
     sb.append("Responda em português e de forma direta. ");
     sb.append("Preferências: ");
     sb.append("id=").append(preferences.getId()).append(". ");
-    
+
     sb.append(userPrompt);
     return sb.toString();
   }
@@ -92,15 +94,17 @@ public abstract class PlanSugestionService implements LlmStrategy<String> {
           O usuário possui um plano intitulado "%s".
           Ele planeja cumpri-lo de %s até %s.
         """
-      .formatted(plan.getTitle(), plan.getStartDate(), plan.getEndDate());
+        .formatted(plan.getTitle(), plan.getStartDate(), plan.getEndDate());
   }
 
   protected String getAdditionalPlanDetails(GenericPlanEntityAbstract plan) {
     return "";
   }
 
-  protected String buildPromptForGenericPlan(GenericPlanEntityAbstract plan, String resumoPlano, String additionalDetails) {
-    String additionalSection = additionalDetails.isBlank() ? "" : "\nDetalhes adicionais:\n" + additionalDetails;
+  protected String buildPromptForGenericPlan(
+      GenericPlanEntityAbstract plan, String resumoPlano, String additionalDetails) {
+    String additionalSection =
+        additionalDetails.isBlank() ? "" : "\nDetalhes adicionais:\n" + additionalDetails;
     String prompt =
         """
                 Responda em português e de forma direta, sem dar margem para continuar uma conversa.

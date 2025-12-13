@@ -14,10 +14,11 @@ import java.util.stream.Collectors;
 public abstract class GenericPlanService<T extends GenericPlanEntityAbstract> {
 
   protected final GenericPlanRepository<T> repository;
-  protected final BaseUserRepository userRepository;
+  protected final BaseUserRepository<? extends BaseUserEntity> userRepository;
 
   protected GenericPlanService(
-      GenericPlanRepository<T> repository, BaseUserRepository userRepository) {
+      GenericPlanRepository<T> repository,
+      BaseUserRepository<? extends BaseUserEntity> userRepository) {
     this.repository = repository;
     this.userRepository = userRepository;
   }

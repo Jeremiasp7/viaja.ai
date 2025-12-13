@@ -16,11 +16,11 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class BaseUserService {
-  private final BaseUserRepository userRepository;
-  private final PasswordEncoder passwordEncoder;
+public class BaseUserService<T extends BaseUserEntity> {
+  protected final BaseUserRepository<T> userRepository;
+  protected final PasswordEncoder passwordEncoder;
 
-  public BaseUserEntity criarUsuario(CreateUserDto dto) {
+  public T criarUsuario(CreateUserDto dto) {
     try {
       BaseUserEntity user =
           BaseUserEntity.builder()
@@ -29,7 +29,7 @@ public class BaseUserService {
               .senha(passwordEncoder.encode(dto.getSenha()))
               .build();
 
-      return userRepository.save(user);
+      return userRepository.save((T) user);
 
     } catch (Exception e) {
 
@@ -37,19 +37,18 @@ public class BaseUserService {
     }
   }
 
-  public List<BaseUserEntity> buscarUsuarios() {
+  public List<T> buscarUsuarios() {
     return userRepository.findAll();
   }
 
-  public BaseUserEntity buscarUsuarioPorId(UUID id) throws UsuarioNaoEncontradoException {
+  public T buscarUsuarioPorId(UUID id) throws UsuarioNaoEncontradoException {
     return userRepository
         .findById(id)
         .orElseThrow(() -> new UsuarioNaoEncontradoException("Usuário não encontrado"));
   }
 
-  public BaseUserEntity atualizarUsuario(UUID id, UpdateUserDto dto)
-      throws UsuarioNaoEncontradoException {
-    BaseUserEntity user = buscarUsuarioPorId(id);
+  public T atualizarUsuario(UUID id, UpdateUserDto dto) throws UsuarioNaoEncontradoException {
+    T user = buscarUsuarioPorId(id);
 
     if (dto.getNome() != null) user.setNome(dto.getNome());
     if (dto.getEmail() != null) user.setEmail(dto.getEmail());
@@ -77,7 +76,7 @@ public class BaseUserService {
   }
 
   public void deletarUsuario(UUID id) throws UsuarioNaoEncontradoException {
-    BaseUserEntity user = buscarUsuarioPorId(id);
+    T user = buscarUsuarioPorId(id);
     userRepository.delete(user);
   }
 

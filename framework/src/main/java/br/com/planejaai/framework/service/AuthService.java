@@ -2,6 +2,7 @@ package br.com.planejaai.framework.service;
 
 import br.com.planejaai.framework.dto.LoginRequestDto;
 import br.com.planejaai.framework.dto.LoginResponseDto;
+import br.com.planejaai.framework.entity.BaseUserEntity;
 import br.com.planejaai.framework.repository.BaseUserRepository;
 import java.time.Duration;
 import java.time.Instant;
@@ -16,12 +17,13 @@ import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 public abstract class AuthService {
 
   protected final JwtEncoder jwtEncoder;
-  protected final BaseUserRepository userRepository;
-  protected final BaseUserService userService;
+  protected final BaseUserRepository<? extends BaseUserEntity> userRepository;
+  protected final BaseUserService<? extends BaseUserEntity> userService;
 
   public ResponseEntity<LoginResponseDto> login(LoginRequestDto loginRequest) {
     var user = userRepository.findByEmail(loginRequest.getEmail());
 
+    System.out.println("User is " + user);
     if (user.isEmpty() || !userService.isLoginCorrect(loginRequest, user.get())) {
       throw new BadCredentialsException("user or password is invalid!");
     }

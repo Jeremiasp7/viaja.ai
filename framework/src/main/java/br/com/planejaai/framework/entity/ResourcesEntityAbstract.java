@@ -16,8 +16,10 @@ import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Data
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -34,7 +36,7 @@ public abstract class ResourcesEntityAbstract { // BudgetEntity - Viajaai
   private String resourceType; // currency - Viajaai,
 
   @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "travel_plan_id")
+  @JoinColumn(name = "plan_id")
   @JsonIgnore
   private GenericPlanEntityAbstract plan;
 

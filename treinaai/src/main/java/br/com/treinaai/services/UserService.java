@@ -1,8 +1,7 @@
 package br.com.treinaai.services;
 
-import org.springframework.stereotype.Service;
-
 import br.com.planejaai.framework.service.BaseUserService;
+import org.springframework.stereotype.Service;
 
 @Service
 public class UserService extends BaseUserService {

@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@RequestMapping("/api/checklists")
 public abstract class ChecklistController<T extends ChecklistEntityAbstract> {
 
   protected final ChecklistService<T> service;
